@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voice Tester</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f4f4f4;
+      color: #333;
+    }
+    select, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 1rem;
+    }
+    label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Speech Synthesis Voice Tester</h1>
+
+  <label for="voice-select">Select a voice:</label>
+  <select id="voice-select"></select>
+
+  <label for="text">Text to speak:</label>
+  <textarea id="text" rows="4">Hello! I'm your interview assistant. Let’s get started.</textarea>
+
+  <button onclick="speakText()">🔊 Speak</button>
+
+  <script>
+    const voiceSelect = document.getElementById("voice-select");
+    const textArea = document.getElementById("text");
+
+    let voices = [];
+
+    function populateVoices() {
+      voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = '';
+
+      voices.forEach((voice, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = `${voice.name} (${voice.lang}) ${voice.default ? "[Default]" : ""}`;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    // Chrome loads voices async
+    window.speechSynthesis.onvoiceschanged = populateVoices;
+    populateVoices();
+
+    function speakText() {
+      const utterance = new SpeechSynthesisUtterance(textArea.value);
+      const selectedVoice = voices[voiceSelect.value];
+      utterance.voice = selectedVoice;
+      utterance.lang = selectedVoice.lang;
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      window.speechSynthesis.speak(utterance);
+    }
+  </script>
+</body>
+</html>

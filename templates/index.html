@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Prep Assistant</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --radius: 12px;
+            --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7ff;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2.5rem;
+            margin: auto;
+            transition: var(--transition);
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f4ff;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .card.selected {
+            border-color: var(--primary);
+            background-color: #f0f4ff;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .card-desc {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .back-btn svg {
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <!-- Home Page -->
+        <div id="home-page">
+            <h1>Interview Preparation Assistant</h1>
+            <p class="subtitle">Enter your target job details to get personalized interview preparation</p>
+            
+            <form id="job-form">
+                <div class="form-group">
+                    <label for="job-role">Target Job Role</label>
+                    <input type="text" id="job-role" placeholder="e.g. Frontend Developer, Data Scientist" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="job-description">Job Description</label>
+                    <textarea id="job-description" placeholder="Paste the job description here..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn">Continue</button>
+            </form>
+        </div>
+
+        <!-- Interview Type Selection -->
+        <div id="interview-type-page" class="hidden">
+            <button class="back-btn" id="back-to-home">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back
+            </button>
+            
+            <h1>Select Interview Type</h1>
+            <p class="subtitle">Choose the type of interview you want to prepare for</p>
+            
+            <div class="card-container">
+                <div class="card" data-type="hr">
+                    <div class="card-icon">💼</div>
+                    <h3 class="card-title">HR Round</h3>
+                    <p class="card-desc">Behavioral questions, company culture, and situational judgment</p>
+                </div>
+                
+                <div class="card" data-type="technical">
+                    <div class="card-icon">👨‍💻</div>
+                    <h3 class="card-title">Technical Round</h3>
+                    <p class="card-desc">Technical skills, problem-solving, and job-specific knowledge</p>
+                </div>
+                
+                <div class="card" data-type="cultural">
+                    <div class="card-icon">🤝</div>
+                    <h3 class="card-title">Cultural Round</h3>
+                    <p class="card-desc">Team fit, values alignment, and work environment preferences</p>
+                </div>
+            </div>
+            
+            <button class="btn hidden" id="continue-from-type">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const homePage = document.getElementById('home-page');
+            const interviewTypePage = document.getElementById('interview-type-page');
+            const jobForm = document.getElementById('job-form');
+            const backToHomeBtn = document.getElementById('back-to-home');
+            const continueFromTypeBtn = document.getElementById('continue-from-type');
+            const progressBar = document.getElementById('progress');
+            const cards = document.querySelectorAll('.card');
+
+            // Variables
+            let selectedInterviewType = null;
+
+            // Event Listeners
+            jobForm.addEventListener('submit', handleJobFormSubmit);
+            backToHomeBtn.addEventListener('click', goBackToHome);
+            continueFromTypeBtn.addEventListener('click', handleInterviewTypeContinue);
+            
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // Remove selected class from all cards
+                    cards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Add selected class to clicked card
+                    card.classList.add('selected');
+                    
+                    // Set selected interview type
+                    selectedInterviewType = card.getAttribute('data-type');
+                    
+                    // Show continue button
+                    continueFromTypeBtn.classList.remove('hidden');
+                });
+            });
+
+            // Functions
+            function handleJobFormSubmit(e) {
+                e.preventDefault();
+                
+                const jobRole = document.getElementById('job-role').value;
+                const jobDescription = document.getElementById('job-description').value;
+                
+                // Save to localStorage
+                localStorage.setItem('targetJobRole', jobRole);
+                localStorage.setItem('jobDescription', jobDescription);
+                
+                // Show next page
+                homePage.classList.add('hidden');
+                interviewTypePage.classList.remove('hidden');
+                
+                // Update progress bar
+                progressBar.style.width = '50%';
+            }
+
+            function goBackToHome() {
+                interviewTypePage.classList.add('hidden');
+                homePage.classList.remove('hidden');
+                progressBar.style.width = '0%';
+                
+                // Reset selection
+                cards.forEach(c => c.classList.remove('selected'));
+                continueFromTypeBtn.classList.add('hidden');
+                selectedInterviewType = null;
+            }
+
+            function handleInterviewTypeContinue() {
+                if (!selectedInterviewType) return;
+                
+                // Save interview type to localStorage
+                localStorage.setItem('interviewType', selectedInterviewType);
+                
+                // Here you would normally proceed to the next step
+                // For this demo, we'll just show an alert
+                alert(`Preparing for ${selectedInterviewType} interview for ${localStorage.getItem('targetJobRole')}`);
+                
+                // In a real app, you would navigate to the next page
+                // For example:
+                // window.location.href = `interview.html?type=${selectedInterviewType}`;
+                
+                // Update progress bar
+                progressBar.style.width = '100%';
+            }
+
+            function handleInterviewTypeContinue() {
+    if (!selectedInterviewType) return;
+    
+    // Get all stored data
+    const jobData = {
+        jobRole: localStorage.getItem('targetJobRole'),
+        jobDescription: localStorage.getItem('jobDescription'),
+        interviewType: selectedInterviewType
+    };
+
+    // Send data to Flask backend
+  fetch('/save-job-data', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        jobRole: localStorage.getItem('targetJobRole'),
+        jobDescription: localStorage.getItem('jobDescription'),
+        interviewType: selectedInterviewType
+    })
+})
+.then(() => window.location.href = '/interview')
+}
+        });
+        
+document.addEventListener('DOMContentLoaded', function() {
+    // ... (existing code)
+
+    const speakBtn = document.getElementById('speak-btn');
+
+    let voices = [];
+
+    function loadVoices() {
+        voices = speechSynthesis.getVoices();
+        // Wait a bit and reload if voices are empty
+        if (voices.length === 0) {
+            setTimeout(loadVoices, 100);
+        }
+    }
+
+    loadVoices();
+    if (typeof speechSynthesis !== "undefined") {
+        speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    speakBtn?.addEventListener('click', () => {
+        const description = document.getElementById('job-description').value;
+        const utterance = new SpeechSynthesisUtterance(description);
+
+        // Optional: Change voice type here by filtering voices
+        const selectedVoice = voices.find(voice => voice.name.includes("Google UK English Female")) || voices[0];
+        utterance.voice = selectedVoice;
+
+        utterance.rate = 1; // speed
+        utterance.pitch = 1; // tone
+        speechSynthesis.speak(utterance);
+    });
+});
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+### SCORES ###
+{
+  "overall_score": 65,
+  "accuracy": 70,
+  "confidence": "Medium",
+  "recommendation": "Candidate has potential, but needs to improve on technical depth and problem-solving skills."
+}
+### END SCORES ###
+
+---
+
+### ANALYSIS ###
+The candidate, Manideep, provided a decent introduction and shared a relevant experience working on a cross-functional team project. However, the discussion lacked technical depth and specific details about his role in the team. When asked to describe a situation where he encountered a technical problem, Manideep struggled to provide a clear and concise answer. Despite this, he showed some potential and demonstrated an understanding of the importance of transparency, empathy, and clear documentation in team collaboration.
+
+### END ANALYSIS ###
+
+---
+
+### STRENGTHS ###
+• Manideep's experience working on a cross-functional team project involving AI and natural language processing is a valuable asset.
+• He demonstrated an understanding of the importance of team collaboration and communication.
+
+### END STRENGTHS ###
+
+---
+
+### IMPROVEMENTS ###
+• Manideep could improve on providing more technical details and specific examples to support his answers.
+• He should work on developing his problem-solving skills and being able to articulate complex technical concepts.
+• More practice and preparation would be beneficial in improving his confidence in answering technical questions.
+
+### END IMPROVEMENTS ###
