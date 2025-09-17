@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR Interview Call</title>
+  <style>
+    :root {
+      --primary: #1e40af;
+      --primary-dark: #1e3a8a;
+      --primary-light: #dbeafe;
+      --secondary: #374151;
+      --accent: #6b7280;
+      --success: #059669;
+      --danger: #dc2626;
+      --danger-dark: #b91c1c;
+      --light: #f8fafc;
+      --dark: #111827;
+      --gray: #6b7280;
+      --light-gray: #e5e7eb;
+      --white: #ffffff;
+      --hr-bubble: linear-gradient(135deg, #1e40af 0%, #374151 100%);
+      --user-bubble: linear-gradient(135deg, #374151 0%, #6b7280 100%);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.06);
+      --border-radius: 12px;
+      --border-radius-lg: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+     
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e5e7eb 100%);
+      overflow: hidden;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--border-radius-lg);
+      margin: 10px;
+      overflow: hidden;
+      box-shadow: var(--shadow-xl);
+      border: 1px solid rgba(229, 231, 235, 0.8);
+    }
+
+    /* Left panel - 25% width */
+    .left-panel {
+      width: 25%;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(229, 231, 235, 0.8);
+      position: relative;
+      border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
+    }
+
+    .video-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 25px;
+      gap: 20px;
+      padding-bottom: 5px;
+    }
+
+    .hr-image-container {
+      position: relative;
+      height: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(30, 64, 175, 0.05), rgba(55, 65, 81, 0.05));
+      border-radius: var(--border-radius);
+      padding: 20px;
+      border: 1px solid rgba(229, 231, 235, 0.5);
+    }
+
+    .user-video-container {
+      height: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(248, 250, 252, 0.8);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      border: 1px solid rgba(229, 231, 235, 0.5);
+    }
+
+    .hr-image {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--white);
+      box-shadow: var(--shadow-lg);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 2;
+    }
+
+    .hr-image:hover {
+      transform: scale(1.08);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .audio-animation {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
+    .audio-animation.active {
+      opacity: 1;
+      animation: pulse 2s infinite, rotate 8s linear infinite;
+    }
+
+    @keyframes pulse {
+      0% { 
+        box-shadow: 0 0 0 0 rgba(30, 64, 175, 0.6);
+        transform: scale(1);
+      }
+      50% { 
+        box-shadow: 0 0 0 20px rgba(30, 64, 175, 0.1);
+        transform: scale(1.05);
+      }
+      100% { 
+        box-shadow: 0 0 0 40px rgba(30, 64, 175, 0);
+        transform: scale(1);
+      }
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    #user-cam {
+      width: 100%;
+      height: 100%;
+      border-radius: 15px;
+      box-shadow: var(--shadow-md);
+      background: var(--light);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      object-fit: cover;
+    }
+
+    #user-cam:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Right panel - 75% width - Chat interface */
+    .right-panel {
+      width: 75%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
+    }
+    .header{
+      display: flex;
+      top: 0;
+      position:fixed;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .chat-header {
+      padding: 20px 25px;
+      background: linear-gradient(135deg, rgba(30, 64, 175, 0.05), rgba(55, 65, 81, 0.05));
+      border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+      text-align: center;
+      border-radius: 0 var(--border-radius-lg) 0 0;
+      width: 100%;
+      
+    }
+
+    .chat-header h2 {
+      margin: 0;
+      color: var(--primary);
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1e40af, #374151);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+   
+ .chat-container {
+  flex:1;
+  flex-direction: column;
+  padding: 25px;
+  overflow-y: auto;
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(241, 245, 249, 0.9));
+  scroll-behavior: smooth;
+  position: relative;
+  height: auto;
+}
+
+
+    
+
+    .chat-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(30, 64, 175, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(55, 65, 81, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .message {
+      margin-bottom: 20px;
+      max-width: 75%;
+      padding: 18px 24px;
+      border-radius: var(--border-radius);
+      line-height: 1.6;
+      position: relative;
+      font-size: 16px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(229, 231, 235, 0.3);
+    }
+
+    .message::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+
+    .message:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .hr-message {
+      background: var(--hr-bubble);
+      color: var(--white);
+      align-self: flex-start;
+      border-bottom-left-radius: 8px;
+      margin-right: auto;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .hr-message::before {
+      bottom: 0;
+      left: -8px;
+      border-width: 0 8px 8px 0;
+      border-color: transparent #1e40af transparent transparent;
+    }
+
+    .user-message {
+      background: var(--user-bubble);
+      color: var(--white);
+      align-self: flex-end;
+      margin-left: auto;
+      border-bottom-right-radius: 8px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-message::before {
+      bottom: 0;
+      right: -8px;
+      border-width: 0 0 8px 8px;
+      border-color: transparent transparent #374151 transparent;
+    }
+
+    .message-header {
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 13px;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-container {
+      padding: 25px;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(229, 231, 235, 0.8);
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 0 0 var(--border-radius-lg) 0;
+      position: sticky;
+      bottom: 0px;
+      overflow: hidden;
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 16px 24px;
+      font-size: 16px;
+      border-radius: var(--border-radius-lg);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      outline: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    #user-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.15);
+      background: var(--white);
+    }
+
+    button {
+      padding: 16px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: var(--border-radius-lg);
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--white);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .voice-btn {
+      background: linear-gradient(135deg, var(--success), #047857);
+      padding: 16px;
+      min-width: 56px;
+      font-size: 20px;
+    }
+
+    .voice-btn:hover {
+      background: linear-gradient(135deg, #047857, #065f46);
+    }
+
+    .unlock-btn {
+      background: linear-gradient(135deg, var(--danger), var(--danger-dark));
+      padding: 16px;
+      min-width: 56px;
+      font-size: 20px;
+      margin-left: 8px;
+    }
+
+    .unlock-btn:hover {
+      background: linear-gradient(135deg, var(--danger-dark), #991b1b);
+    }
+
+    .end-interview-btn {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--danger), var(--danger-dark));
+      width: 80%;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .end-interview-btn:hover {
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--white);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(30, 64, 175, 0.9), rgba(55, 65, 81, 0.9));
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .loading-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .loading-text {
+      margin-top: 30px;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--white);
+      text-align: center;
+      animation: fadeInOut 2s infinite;
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    /* Enhanced scrollbar styling */
+    .chat-container::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    .chat-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+      border: 2px solid rgba(229, 231, 235, 0.1);
+    }
+
+    .chat-container::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+    }
+
+    /* Floating elements animation */
+    .floating-elements {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .floating-element {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(30, 64, 175, 0.2);
+      border-radius: 50%;
+      animation: float 20s infinite linear;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .left-panel {
+        width: 30%;
+      }
+      .right-panel {
+        width: 70%;
+      }
+      .message {
+        max-width: 85%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        margin: 5px;
+        border-radius: 15px;
+      }
+      .left-panel, .right-panel {
+        width: 100%;
+        border-radius: 0;
+      }
+      .left-panel {
+        height: 200px;
+        border-radius: 15px 15px 0 0;
+      }
+      .right-panel {
+        border-radius: 0 0 15px 15px;
+      }
+      .hr-image, .audio-animation {
+        width: 80px;
+        height: 80px;
+      }
+      .end-interview-btn {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        width: 90%;
+        margin: 15px auto 0;
+      }
+      .video-container {
+        flex-direction: row;
+        padding: 15px;
+        
+      }
+      .hr-image-container,
+      .user-video-container {
+        width: 100%;
+        height: 100%;
+      }
+      .message {
+        max-width: 95%;
+      }
+        
+
+    /* Accessibility improvements */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* High contrast mode */
+    @media (prefers-contrast: high) {
+      :root {
+        --primary: #1e40af;
+        --secondary: #374151;
+        --danger: #dc2626;
+        --success: #059669;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="floating-elements">
+    <div class="floating-element" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="floating-element" style="left: 20%; animation-delay: 2s;"></div>
+    <div class="floating-element" style="left: 30%; animation-delay: 4s;"></div>
+    <div class="floating-element" style="left: 40%; animation-delay: 6s;"></div>
+    <div class="floating-element" style="left: 50%; animation-delay: 8s;"></div>
+    <div class="floating-element" style="left: 60%; animation-delay: 10s;"></div>
+    <div class="floating-element" style="left: 70%; animation-delay: 12s;"></div>
+    <div class="floating-element" style="left: 80%; animation-delay: 14s;"></div>
+    <div class="floating-element" style="left: 90%; animation-delay: 16s;"></div>
+  </div>
+
+  <div class="container">
+      <!-- <div class="header">
+       <div class="chat-header">
+        <h2>Interview Session</h2>
+      </div>
+    </div> -->
+    <!-- Left panel (25%) with HR image and user video -->
+    <div class="left-panel">
+      <div class="video-container">
+        <div class="hr-image-container">
+          <img src="/static/interviewer.jpg" alt="Interviewer" class="hr-image">
+          <div class="audio-animation" id="audio-animation"></div>
+        </div>
+        <div class="user-video-container">
+          <video id="user-cam" autoplay muted playsinline></video>
+        </div>
+      </div>
+      <button class="end-interview-btn" id="end-interview-btn">
+        <span id="end-interview-text">End Interview</span>
+      </button>
+    </div>
+  
+ 
+    <!-- Right panel (75%) with chat interface -->
+    <div class="right-panel">
+    
+      <div class="chat-container" id="chat-container">
+        <!-- Chat messages will be inserted here -->
+      </div>
+      
+      <div class="input-container">
+        <input type="text" id="user-input" placeholder="Type or speak your answer..." />
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="startVoice()" class="voice-btn">🎤</button>
+        <button onclick="forceUnlock()" class="unlock-btn" id="unlock-btn" style="display: none;" title="Click if you're stuck waiting">🔓</button>
+      </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Generating your interview report...</div>
+    </div>
+  </div>
+
+  <script>
+let recognition;
+let accumulatedTranscript = '';
+let isListening = false;
+let silenceTimer;
+let restartTimer;
+const SILENCE_TIMEOUT = 5000;
+const RESTART_INTERVAL = 45000;
+let isAIResponding = false;
+let isSpeaking = false;
+let speechUnlockTimer = null;
+let speechTimeoutTimer = null;
+ 
+let hasSpokenPrompt = false;
+
+window.onload = () => {
+  console.log("Initialized Interview App");
+  setTimeout(() => {
+    addMessageToChat('Interviewer', 'Hello! Welcome to your interview. Let\'s begin by having you tell me about yourself.', 'hr-message');
+  }, 500);
+
+  document.getElementById("user-input").addEventListener("keypress", e => {
+    if (e.key === "Enter") sendMessage();
+  });
+
+  document.getElementById("end-interview-btn").addEventListener("click", endInterview);
+
+  initializeWebcam();
+};
+
+function initializeWebcam() {
+  const video = document.getElementById("user-cam");
+  if (navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720, facingMode: "user" } })
+      .then(stream => video.srcObject = stream)
+      .catch(err => console.error("Webcam error", err));
+  }
+}
+
+function startVoice() {
+  if (isListening || isAIResponding || isSpeaking) {
+    addMessageToChat("System", "⛔ Please wait until the interviewer completes the question.", "hr-message");
+    return;
+  }
+  accumulatedTranscript = '';
+  startRecognition();
+}
+
+function startRestartTimer() {
+  clearTimeout(restartTimer);
+  restartTimer = setTimeout(() => {
+    console.log('⏱️ Restarting voice input due to 45s limit');
+    restartRecognition();
+  }, RESTART_INTERVAL);
+}
+
+function startSilenceTimer() {
+  clearTimeout(silenceTimer);
+  silenceTimer = setTimeout(() => {
+    if (accumulatedTranscript.trim()) {
+      console.log('🕐 User silent for 5s, sending message');
+      sendMessage();
+    } else {
+      addMessageToChat("System", "🕒 No speech detected. Try again.", "hr-message");
+      stopRecognition();
+    }
+  }, SILENCE_TIMEOUT);
+}
+
+function startRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Speech Recognition not supported!");
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = "en-IN";
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+ // let hasSpokenPrompt = false;  // 👈 Add this globally at the top
+
+recognition.onstart = () => {
+  isListening = true;
+
+  if (!hasSpokenPrompt) {
+    addMessageToChat("System", "🎤 Listening... Speak now.", "hr-message");
+    hasSpokenPrompt = true;
+  }
+
+  startRestartTimer();
+  startSilenceTimer();
+};
+
+  recognition.onresult = e => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const transcript = e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        accumulatedTranscript += transcript + " ";
+      } else {
+        interim += transcript;
+      }
+    }
+    document.getElementById("user-input").value = accumulatedTranscript + interim;
+    startSilenceTimer();
+  };
+
+  recognition.onerror = e => {
+    console.error("Recognition error", e.error);
+    addMessageToChat("System", "❌ Error: " + e.error, "hr-message");
+    stopRecognition();
+  };
+
+  recognition.onend = () => {
+    if (isListening) {
+      console.log("⛔ Recognition ended unexpectedly. Restarting...");
+      restartRecognition();
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch (e) {
+    console.error("Start error", e);
+  }
+}
+
+function restartRecognition() {
+  if (recognition) {
+    recognition.onend = null;
+    recognition.stop();
+  }
+  startRecognition();
+}
+
+function stopRecognition() {
+  clearTimeout(silenceTimer);
+  clearTimeout(restartTimer);
+  isListening = false;
+  if (recognition) {
+    recognition.onend = null;
+    recognition.stop();
+  }
+}
+
+function sendMessage() {
+  // Clear any existing speech timers
+  if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
+  if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
+  
+  // Stop any ongoing speech synthesis when sending a new message
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    console.log("Cancelled ongoing speech synthesis for new message");
+    addMessageToChat("System", "🔇 Previous voice-over stopped for new message.", "hr-message");
+  }
+  
+  // Reset all states
+  isSpeaking = false;
+  isAIResponding = false;
+  document.getElementById("audio-animation").classList.remove("active");
+  document.getElementById("unlock-btn").style.display = "none";
+
+  stopRecognition();
+
+  let input = document.getElementById("user-input");
+  let message = input.value.trim() || accumulatedTranscript.trim();
+
+  if (!message) return;
+
+  input.value = "";
+  accumulatedTranscript = "";
+
+  addMessageToChat("You", message, "user-message");
+
+  isAIResponding = true;
+
+  fetch("/ask", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `message=${encodeURIComponent(message)}`
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.reply) throw new Error("No reply");
+
+      const cleanReply = data.reply
+        .replace(/(\([^)]*\))/g, "")
+        .replace(/I'll wait for your message.*?(\.|\n)/gi, "")
+        .replace(/No pressure.*?(\.|\n)/gi, "");
+
+      addMessageToChat("Interviewer", cleanReply.trim(), "hr-message");
+
+      // ⚠️ If there's a response, speak it
+      if (cleanReply.trim()) {
+        speakMessage(cleanReply.trim());
+        
+        // Safety timeout in case speech events don't fire
+        speechTimeoutTimer = setTimeout(() => {
+          if (isSpeaking || isAIResponding) {
+            console.warn("Speech synthesis timeout - forcing unlock");
+            isSpeaking = false;
+            isAIResponding = false;
+            document.getElementById("user-input").disabled = false;
+            document.getElementById("audio-animation").classList.remove("active");
+            document.getElementById("unlock-btn").style.display = "none";
+          }
+        }, 30000); // 30 second timeout
+      } else {
+        isAIResponding = false;
+      }
+    })
+    .catch(err => {
+      console.error("Send error:", err);
+      addMessageToChat("System", "⚠️ Failed to send message.", "hr-message");
+    })
+    .finally(() => {
+      // ✅ Always unlock if not speaking
+      if (!isSpeaking) isAIResponding = false;
+    });
+}
+
+
+function speakMessage(text) {
+  // Clear any existing timers
+  if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
+  if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
+  
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-IN";
+  utterance.rate = 1.5;
+
+  isSpeaking = true;
+  isAIResponding = true;  // Keep AI responding flag active during speech
+  document.getElementById("user-input").disabled = false; // Allow typing during speech
+
+  // Show unlock button after 5 seconds as a safety measure
+  speechUnlockTimer = setTimeout(() => {
+    if (isSpeaking || isAIResponding) {
+      document.getElementById("unlock-btn").style.display = "inline-block";
+    }
+  }, 5000);
+
+  // 🌟 Start HR animation
+  document.getElementById("audio-animation").classList.add("active");
+
+  utterance.onend = () => {
+    if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
+    if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
+    isSpeaking = false;
+    isAIResponding = false;  // ✅ Unlock here
+    document.getElementById("user-input").disabled = false;
+    document.getElementById("audio-animation").classList.remove("active");
+    document.getElementById("unlock-btn").style.display = "none";
+  };
+
+  utterance.onerror = () => {
+    if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
+    if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
+    isSpeaking = false;
+    isAIResponding = false;  // ✅ Unlock on error too
+    document.getElementById("user-input").disabled = false;
+    document.getElementById("audio-animation").classList.remove("active");
+    document.getElementById("unlock-btn").style.display = "none";
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function forceUnlock() {
+  console.log("Force unlocking interview interface");
+  
+  // Clear any speech-related timers
+  if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
+  if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
+  
+  // Stop any ongoing speech synthesis
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    console.log("Cancelled ongoing speech synthesis");
+  }
+  
+  isSpeaking = false;
+  isAIResponding = false;
+  isListening = false;
+  document.getElementById("user-input").disabled = false;
+  document.getElementById("audio-animation").classList.remove("active");
+  document.getElementById("unlock-btn").style.display = "none";
+  addMessageToChat("System", "🔓 Interface unlocked manually. Previous voice-over stopped.", "hr-message");
+}
+
+
+function addMessageToChat(sender, text, className) {
+  const container = document.getElementById("chat-container");
+  const div = document.createElement("div");
+  div.className = `message ${className}`;
+  div.innerHTML = `<div class="message-header">${sender}</div><div>${text}</div>`;
+  container.appendChild(div);
+
+  // Scroll to the bottom smoothly
+  container.scrollTo({
+    top: container.scrollHeight,
+    behavior: "smooth"
+  });
+}
+function adjustChatHeight() {
+  const chatContainer = document.getElementById("chat-container");
+  const inputContainer = document.querySelector(".input-container");
+  chatContainer.style.height = (window.innerHeight - inputContainer.offsetHeight) + "px";
+}
+
+// Call on load and resize (keyboard open/close)
+window.addEventListener("load", adjustChatHeight);
+window.addEventListener("resize", adjustChatHeight);
+
+
+async function endInterview() {
+  window.speechSynthesis.cancel();
+  stopRecognition();
+
+  const btn = document.getElementById("end-interview-btn");
+  const overlay = document.getElementById("loading-overlay");
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="loading-spinner"></div><span>Generating Report...</span>';
+  overlay.classList.add("active");
+
+  try {
+    const res = await fetch("/generate-report", { method: "POST" });
+    const data = await res.json();
+    if (data.status === "success") {
+      window.location.href = "/report";
+    } else {
+      throw new Error(data.message || "Unknown error");
+    }
+  } catch (err) {
+    console.error("End error:", err);
+    addMessageToChat("System", "❌ Failed to generate report.", "hr-message");
+  } finally {
+    overlay.classList.remove("active");
+    btn.disabled = false;
+    btn.innerHTML = "End Interview";
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    window.speechSynthesis.cancel();
+    stopRecognition(); // prevent ghost restarts
+  }
+});
+
+window.addEventListener("load", () => {
+  if (recognition && recognition.stop) {
+    window.speechSynthesis.cancel();
+    stopRecognition(); // ✅ Stop any leftover recognition
+  }
+});
+
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted && recognition && recognition.stop) {
+    window.speechSynthesis.cancel();
+    stopRecognition(); // ✅ Handles bfcache (back-forward cache)
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  if (recognition && recognition.stop) {
+    window.speechSynthesis.cancel();
+    stopRecognition(); // Prevents ghost sessions
+  }
+});
+function addMessageToChat(sender, text, className) {
+  const container = document.getElementById("chat-container");
+  
+  const div = document.createElement("div");
+  div.className = `message ${className}`;
+  div.innerHTML = `<div class="message-header">${sender}</div><div>${text}</div>`;
+  container.appendChild(div);
+
+  // Smooth scroll to bottom
+  container.scrollTo({
+    top: container.scrollHeight,
+    behavior: 'smooth' // scroll smoothly like WhatsApp
+  });
+}
+function adjustChatForKeyboard() {
+  const chatContainer = document.getElementById("chat-container");
+  const inputContainer = document.querySelector(".input-container");
+
+  // Available height: viewport height minus input container height
+  const availableHeight = window.innerHeight - inputContainer.offsetHeight;
+  chatContainer.style.height = availableHeight + "px";
+
+  // Always scroll to bottom
+  chatContainer.scrollTo({
+    top: chatContainer.scrollHeight,
+    behavior: "smooth"
+  });
+}
+// When page loads
+window.addEventListener("load", adjustChatForKeyboard);
+
+// When window resizes (keyboard opens/closes)
+window.addEventListener("resize", adjustChatForKeyboard);
+
+// When a new message is added
+function addMessageToChat(sender, text, className) {
+  const container = document.getElementById("chat-container");
+  const div = document.createElement("div");
+  div.className = `message ${className}`;
+  div.innerHTML = `<div class="message-header">${sender}</div><div>${text}</div>`;
+  
+  // Check if user is near bottom before adding new message
+  const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
+
+  container.appendChild(div);
+
+  // Only auto-scroll if user was near bottom
+  if (isNearBottom) {
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+
+
+
+
+</script>
+
+
+</body>
+</html>
