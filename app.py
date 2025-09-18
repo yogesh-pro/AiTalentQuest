@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 from flask import Flask, render_template, request, jsonify, session, redirect
 from dotenv import load_dotenv
 import os
@@ -485,7 +485,7 @@ if __name__ == '__main__':
     port=5000,
     debug=False
 )
-=======
+
 from flask import Flask, render_template, request, jsonify, session, redirect
 from dotenv import load_dotenv
 import os
@@ -993,4 +993,3 @@ if __name__ == '__main__':
     port=5000,
     debug=False
 )
->>>>>>> 3d3c754 (chnage by krish)
