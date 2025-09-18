@@ -1,4 +1,4 @@
-
+# app.py
 
 from flask import Flask, render_template, request, jsonify, session, redirect
 from dotenv import load_dotenv
@@ -7,6 +7,9 @@ import requests
 import logging
 from functools import wraps
 from groq import Groq
+import re
+import json
+import time
 
 # Initialize environment and logging
 load_dotenv()
@@ -140,7 +143,7 @@ At the end of the interview (whether early or after 15 questions), clearly state
         -- At the end of the interview (whether early or after 15 questions), clearly state the conclusion and ask the user to press the end interview button to generate report.
         """
     },
-   "report": {
+    "report": {
     "instructions": """
 You are an assistant generating a structured post-interview feedback report. 
 Be concise, critical, and format the report **exactly** using the following sections and tags.
@@ -194,7 +197,6 @@ Make sure:
 Now analyze this interview conversation and return the report in the above format.
 """
 }
-
 }
 
 def validate_interview_type(f):
@@ -258,6 +260,10 @@ def start_interview():
         {"role": "assistant", "content": f"Let's begin our {interview_type} discussion about {session['job_data']['role']}. Could you introduce yourself and your relevant experience?"}
     ]
     session['question_count'] = 0
+    # Initialize the response_times list here
+    session['response_times'] = []
+    # Set the initial timestamp for the very first question
+    session['last_ai_message_time'] = time.time()
     
     app.logger.debug(f"Interview initialized with system prompt: {system_prompt[:200]}...")
     return render_template('interview.html')
@@ -279,9 +285,21 @@ def ask_question():
         if not user_message:
             raise ValueError("Empty message received")
 
+        # ** Calculate the user's response time **
+        if 'last_ai_message_time' in session:
+            user_response_time = time.time() - session['last_ai_message_time']
+            # Initialize the list if it doesn't exist
+            if 'response_times' not in session:
+                session['response_times'] = []
+            
+            # Append the new response time
+            session['response_times'].append(round(user_response_time))
+            # Critical: Tell Flask the session has been modified
+            session.modified = True
+
         # Mark AI as responding
         session["is_ai_responding"] = True
-
+        
         # Update conversation
         interview_type = session['job_data']['type']
         session['conversation'].append({"role": "user", "content": user_message})
@@ -312,6 +330,10 @@ def ask_question():
         ai_reply = response.json()['choices'][0]['message']['content']
         session['conversation'].append({"role": "assistant", "content": ai_reply})
         session["is_ai_responding"] = False
+        session.modified = True
+        
+        # Store the current time for the next response calculation
+        session['last_ai_message_time'] = time.time()
 
         return jsonify({
             "reply": ai_reply,
@@ -337,8 +359,6 @@ def ask_question():
             "status": "error"
         }), 500
 
-import re
-import json
 
 @app.route("/generate-report", methods=["POST"])
 def generate_report():
@@ -443,7 +463,6 @@ Not enough responses were provided by the candidate to generate a meaningful rep
         return render_template("error.html", message=str(e)), 500
 
 
-
 @app.route("/report")
 def report():
     latest_report = session.get("latest_report", {})
@@ -470,40 +489,71 @@ def report():
     })
 
     return render_template("report.html",
-                           analysis=analysis,
-                           strengths=strengths,
-                           improvements=improvements,
-                           report_score=report_score,
-                           conversation=full_convo)
+                            analysis=analysis,
+                            strengths=strengths,
+                            improvements=improvements,
+                            report_score=report_score,
+                            conversation=full_convo)
+
+
+def extract_block(text, start_tag, end_tag):
+    try:
+        return text.split(start_tag)[1].split(end_tag)[0].strip()
+    except (IndexError, AttributeError):
+        return "Not Available"
 
 @app.route("/dashboard")
 def dashboard():
-    # Ek candidate ka interview result
+    # Get the latest report from the session
+    latest_report = session.get("latest_report", {})
+    report_score = latest_report.get("report_score", {})
+    
+    # Extract scores, providing defaults if they don't exist
+    overall_score = report_score.get("overall_score", 0)
+    accuracy = report_score.get("accuracy", 0)
+    
+    # Fetch a communication score from the report, assuming the prompt can generate it.
+    communication_score = report_score.get("communication", 0) 
+    
+    confidence = report_score.get("confidence", "Low")
+    
+    # Map confidence to a numerical score for the radar chart
+    confidence_map = {"Low": 3, "Medium": 6, "High": 9}
+    confidence_score = confidence_map.get(confidence, 6)
+
+    # Get the list of response times from the session
+    response_times = session.get("response_times", [])
+
+    # Build the candidate dictionary with dynamic data
     candidate = {
-        "name": "Candidate A",
-        "score": 85,
-        "skills": [8, 7, 6],  # Technical, Communication, Confidence
-        "response_times": [5, 7, 4, 6]  # seconds per question
+        "name": session.get("candidate_name", "Candidate"), 
+        "score": overall_score,
+        "skills": [accuracy, communication_score, confidence_score],
+        "response_times": response_times
     }
 
-    skill_labels = ["Technical", "Communication", "Confidence"]
+    # Generate dynamic labels for the response time chart
+    response_time_labels = [f"Q{i+1}" for i in range(len(response_times))]
+    
+    # These labels are static but tied to the data order.
+    skill_labels = ["Accuracy", "Communication", "Confidence"]
 
-    # Auto-generated summary (static for now, tu baad me AI/logic se change kar sakta hai)
-    summary = "This candidate has strong technical knowledge but needs improvement in communication."
+    # Extract the summary from the generated report
+    report_text = latest_report.get("report_text", "")
+    summary = extract_block(report_text, "### ANALYSIS ###", "### END ANALYSIS ###")
 
     return render_template(
         "dashboard.html",
         candidate=candidate,
         skill_labels=skill_labels,
+        response_time_labels=response_time_labels,  # Pass the new labels
         summary=summary
     )
 
 
-
-
 if __name__ == '__main__':
    app.run(
-    host='0.0.0.0',
-    port=5000,
-    debug=False
+   host='0.0.0.0',
+   port=5000,
+   debug=False
 )

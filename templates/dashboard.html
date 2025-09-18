@@ -204,24 +204,25 @@
       });
 
       // Line Chart
-      const timeCtx = document.getElementById('timeChart').getContext('2d');
-      new Chart(timeCtx, {
+     // Line Chart (Response Times)
+    const timeCtx = document.getElementById('timeChart').getContext('2d');
+    new Chart(timeCtx, {
         type: 'line',
         data: {
-          labels: ["Q1","Q2","Q3","Q4"],
-          datasets: [{
-            label: "Response Time (sec)",
-            data: {{ candidate.response_times|safe }},
-            borderColor: "rgba(59,130,246,1)",
-            backgroundColor: "rgba(59,130,246,0.2)",
-            fill: true,
-            tension: 0.3,
-            pointRadius: 5
-          }]
+            // Use the dynamic labels passed from Flask
+            labels: {{ response_time_labels|safe }},
+            datasets: [{
+                label: "Response Time (sec)",
+                data: {{ candidate.response_times|safe }},
+                borderColor: "rgba(59,130,246,1)",
+                backgroundColor: "rgba(59,130,246,0.2)",
+                fill: true,
+                tension: 0.3,
+                pointRadius: 5
+            }]
         },
         options: { responsive: true }
-      });
-
+    });
       // Pie Chart
       const pieCtx = document.getElementById('pieChart').getContext('2d');
       new Chart(pieCtx, {
