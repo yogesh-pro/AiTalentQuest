@@ -8,5 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+<<<<<<< HEAD
 .env
 .DS_Store
+=======
+>>>>>>> 210c9f6 (change by krish)
