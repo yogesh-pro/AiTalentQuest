@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-flask
-requests
-=======
+
 flask
 requests
 git 
->>>>>>> 210c9f6 (change by krish)
+
