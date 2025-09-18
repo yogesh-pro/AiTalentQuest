@@ -1,6 +1,6 @@
 
 
-from flask import  render_template, request, jsonify, session, redirect
+from flask import Flask, render_template, request, jsonify, session, redirect
 from dotenv import load_dotenv
 import os
 import requests
