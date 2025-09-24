@@ -10,6 +10,7 @@ from groq import Groq
 import re
 import json
 import time
+from flask_session import Session
 
 # Initialize environment and logging
 load_dotenv()
@@ -17,7 +18,12 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', os.urandom(24).hex())
-
+# Use filesystem-based sessions
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_FILE_DIR'] = './flask_session_data'  # folder to store session files
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True  # signs the session cookie
+Session(app)
 
 # API Configuration
 API_CONFIG = {
@@ -155,6 +161,7 @@ Strictly follow the below format
 {
   "overall_score": 75,
   "accuracy": 82,
+  "communication": 78,
   "confidence": "Medium",
   "recommendation": "Excellent candidate. Ready for the next round."
 }
@@ -170,14 +177,14 @@ Provide a detailed paragraph summarizing the candidate’s performance, technica
 ---
 
 ### STRENGTHS ###
-List 2-3 bullet points summarizing the candidate’s key strengths.
+Write 2–3 clear sentences (no bullet points, no symbols) summarizing the candidate’s key strengths.
 
 ### END STRENGTHS ###
 
 ---
 
 ### IMPROVEMENTS ###
-List 2-3 bullet points highlighting areas the candidate should improve on.
+Write 2–3 clear sentences (no bullet points, no symbols) highlighting areas the candidate should improve on.
 
 ### END IMPROVEMENTS ###
 
@@ -378,6 +385,7 @@ def generate_report():
 {
   "overall_score": 0,
   "accuracy": 0,
+  "communication": 0,
   "confidence": "Low",
   "recommendation": "Not enough responses to evaluate the candidate."
 }
@@ -409,6 +417,7 @@ Not enough responses were provided by the candidate to generate a meaningful rep
                 "report_score": {
                     "overall_score": 0,
                     "accuracy": 0,
+                    "communication": 0,
                     "confidence": "Low",
                     "recommendation": "Not enough responses to evaluate the candidate."
                 }
@@ -446,6 +455,7 @@ Not enough responses were provided by the candidate to generate a meaningful rep
             report_score = {
                 "overall_score": 0,
                 "accuracy": 0,
+                "communication": 0,
                 "confidence": "Low",
                 "recommendation": "Could not parse scores"
             }
@@ -484,16 +494,17 @@ def report():
     report_score = latest_report.get("report_score", {
         "overall_score": 0,
         "accuracy": 0,
+        "communication": 0,
         "confidence": "Low",
         "recommendation": "Not Available"
     })
 
     return render_template("report.html",
-                            analysis=analysis,
-                            strengths=strengths,
-                            improvements=improvements,
-                            report_score=report_score,
-                            conversation=full_convo)
+                           analysis=analysis,
+                           strengths=strengths,
+                           improvements=improvements,
+                           report_score=report_score,
+                           conversation=full_convo)
 
 
 def extract_block(text, start_tag, end_tag):
@@ -502,43 +513,48 @@ def extract_block(text, start_tag, end_tag):
     except (IndexError, AttributeError):
         return "Not Available"
 
+def calculate_overall_score(accuracy, confidence):
+    """
+    Calculate overall score based only on accuracy and confidence.
+    - Accuracy: weighted 70%
+    - Confidence: mapped and weighted 30%
+    """
+    confidence_map = {"Low": 40, "Medium": 70, "High": 90}
+    confidence_score = confidence_map.get(confidence, 50)
+
+    # Weighted formula
+    overall = int((accuracy * 0.7) + (confidence_score * 0.3))
+    return overall, confidence_score
+
 @app.route("/dashboard")
 def dashboard():
-    # Get the latest report from the session
     latest_report = session.get("latest_report", {})
     report_score = latest_report.get("report_score", {})
-    
-    # Extract scores, providing defaults if they don't exist
-    overall_score = report_score.get("overall_score", 0)
-    accuracy = report_score.get("accuracy", 0)
-    
-    # Fetch a communication score from the report, assuming the prompt can generate it.
-    communication_score = report_score.get("communication", 0) 
-    
-    confidence = report_score.get("confidence", "Low")
-    
-    # Map confidence to a numerical score for the radar chart
-    confidence_map = {"Low": 3, "Medium": 6, "High": 9}
-    confidence_score = confidence_map.get(confidence, 6)
 
-    # Get the list of response times from the session
+    # Extract values
+    accuracy = report_score.get("accuracy", 0)
+    confidence = report_score.get("confidence", "Low")
+    communication_score = report_score.get("communication", 0) 
+
+    # Calculate overall score dynamically (accuracy + confidence only)
+    overall_score, confidence_score_num = calculate_overall_score(accuracy, confidence)
+
+    # Get response times
     response_times = session.get("response_times", [])
 
-    # Build the candidate dictionary with dynamic data
+    # Candidate info
     candidate = {
-        "name": session.get("candidate_name", "Candidate"), 
+        "name": session.get("candidate_name", "Candidate"),
         "score": overall_score,
-        "skills": [accuracy, communication_score, confidence_score],
+        "skills": [accuracy, communication_score, confidence_score_num],
         "response_times": response_times
     }
 
-    # Generate dynamic labels for the response time chart
+    # Dynamic labels
     response_time_labels = [f"Q{i+1}" for i in range(len(response_times))]
-    
-    # These labels are static but tied to the data order.
     skill_labels = ["Accuracy", "Communication", "Confidence"]
 
-    # Extract the summary from the generated report
+    # Extract summary
     report_text = latest_report.get("report_text", "")
     summary = extract_block(report_text, "### ANALYSIS ###", "### END ANALYSIS ###")
 
@@ -546,14 +562,14 @@ def dashboard():
         "dashboard.html",
         candidate=candidate,
         skill_labels=skill_labels,
-        response_time_labels=response_time_labels,  # Pass the new labels
+        response_time_labels=response_time_labels,
         summary=summary
     )
 
 
 if __name__ == '__main__':
-   app.run(
-   host='0.0.0.0',
-   port=5000,
-   debug=False
+    app.run(
+    host='0.0.0.0',
+    port=5000,
+    debug=False
 )

@@ -56,18 +56,14 @@
         width: 100%;
       }
 
-      /* --- Mobile-specific styles --- */
       @media (max-width: 1130px) {
         .dashboard {
-          grid-template-columns: repeat(
-            2,
-            minmax(300px, 1fr)
-          ); /* 2 columns for tablets */
+          grid-template-columns: repeat(2, minmax(300px, 1fr));
         }
       }
       @media (max-width: 768px) {
         .dashboard {
-          grid-template-columns: 1fr; /* 1 column for mobile */
+          grid-template-columns: 1fr;
           padding: 0 10px;
         }
         h1 {
@@ -76,56 +72,42 @@
         .card {
           padding: 20px;
         }
-        @media (max-width: 480px) {
-          h1 {
-            font-size: 1.5rem;
-          }
-          .card h3 {
-            font-size: 1.2rem;
-          }
-          .card p {
-            font-size: 0.9rem;
-          }
-          canvas {
-            max-width: 100%;
-            height: auto;
-          }
+      }
+      @media (max-width: 480px) {
+        h1 {
+          font-size: 1.5rem;
+        }
+        .card h3 {
+          font-size: 1.2rem;
+        }
+        .card p {
+          font-size: 0.9rem;
+        }
+        canvas {
+          max-width: 100%;
+          height: auto;
         }
       }
+
       /* Scrollbar styling */
       ::-webkit-scrollbar {
         width: 8px;
       }
-
       ::-webkit-scrollbar-track {
         background: #f1f1f1;
         border-radius: 4px;
       }
-
       ::-webkit-scrollbar-thumb {
         background: #c7d2fe;
         border-radius: 4px;
       }
-
       ::-webkit-scrollbar-thumb:hover {
         background: var(--primary);
       }
     </style>
   </head>
   <body>
-    <!-- 
-  <header>
-    <h1>📊 Interview Results Dashboard</h1>
-  </header> -->
-
     <div class="dashboard">
-      <!-- Candidate Info -->
-      <div class="card candidate-info">
-        <h3>Candidate Details</h3>
-        <p><b>Name:</b> {{ candidate.name }}</p>
-        <p><b>Score:</b> {{ candidate.score }}/100</p>
-      </div>
-
       <!-- Score Bar Chart -->
       <div class="card">
         <h3>Score</h3>
@@ -155,107 +137,129 @@
         <h3>Score Status</h3>
         <canvas id="doughnutChart"></canvas>
       </div>
-
-      <!-- Optional Summary -->
-      <!-- <div class="card summary-card">
-      <h3>Summary Report</h3>
-      <p>{{ summary }}</p>
-    </div> -->
     </div>
 
     <script>
-      // Bar Chart
-      const scoreCtx = document.getElementById('scoreChart').getContext('2d');
-      new Chart(scoreCtx, {
-        type: 'bar',
-        data: {
-          labels: ["{{ candidate.name }}"],
-          datasets: [{
-            label: 'Score',
-            data: [{{ candidate.score }}],
-            backgroundColor: 'rgba(30,64,175,0.7)',
-            borderRadius: 6,
-            barThickness: 40
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: { y: { beginAtZero: true, max: 100 } }
-        }
-      });
+      let scoreChart, skillChart, timeChart, pieChart, doughnutChart;
 
-      // Radar Chart
-      const skillCtx = document.getElementById('skillChart').getContext('2d');
-      new Chart(skillCtx, {
-        type: 'radar',
-        data: {
-          labels: {{ skill_labels|safe }},
-          datasets: [{
-            label: "{{ candidate.name }}",
-            data: {{ candidate.skills|safe }},
-            fill: true,
-            backgroundColor: 'rgba(30,64,175,0.2)',
-            borderColor: 'rgba(30,64,175,1)',
-            pointBackgroundColor: 'rgba(30,64,175,1)'
-          }]
-        },
-        options: { responsive: true }
-      });
-
-      // Line Chart
-     // Line Chart (Response Times)
-    const timeCtx = document.getElementById('timeChart').getContext('2d');
-    new Chart(timeCtx, {
-        type: 'line',
-        data: {
-            // Use the dynamic labels passed from Flask
-            labels: {{ response_time_labels|safe }},
-            datasets: [{
-                label: "Response Time (sec)",
-                data: {{ candidate.response_times|safe }},
-                borderColor: "rgba(59,130,246,1)",
-                backgroundColor: "rgba(59,130,246,0.2)",
-                fill: true,
-                tension: 0.3,
-                pointRadius: 5
-            }]
-        },
-        options: { responsive: true }
-    });
-      // Pie Chart
-      const pieCtx = document.getElementById('pieChart').getContext('2d');
-      new Chart(pieCtx, {
-        type: 'pie',
-        data: {
-          labels: {{ skill_labels|safe }},
-          datasets: [{
-            data: {{ candidate.skills|safe }},
-            backgroundColor: [
-              'rgba(30,64,175,0.7)',
-              'rgba(59,130,246,0.7)',
-              'rgba(147,197,253,0.7)',
-              'rgba(191,219,254,0.7)'
+      function initCharts(candidate, skill_labels, response_time_labels){
+        // Score Bar Chart
+        const scoreCtx = document.getElementById('scoreChart').getContext('2d');
+        scoreChart = new Chart(scoreCtx, {
+          type: 'bar',
+          data: {
+            labels: [candidate.name],
+            datasets: [
+              {
+                label: 'Score',
+                data: [candidate.score],
+                backgroundColor: 'rgba(30,64,175,0.7)',
+                borderRadius: 6,
+                barThickness: 30,
+                order: 1
+              },
+              {
+                label: 'Communication',
+                data: [candidate.skills[1]],
+                backgroundColor:'rgba(255,99,132,0.7)',
+                borderRadius: 6,
+                barThickness: 30,
+                order: 2,
+                barPercentage: 0.5,
+                categoryPercentage: 0.6
+              }
             ]
-          }]
-        },
-        options: { responsive: true }
-      });
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: true } },
+            scales: {
+              x: { stacked: false },
+              y: { beginAtZero: true, max: 100 }
+            }
+          }
+        });
 
-      // Doughnut Chart
-      const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
-      new Chart(doughnutCtx, {
-        type: 'doughnut',
-        data: {
-          labels: ["Score","Remaining"],
-          datasets: [{
-            data: [{{ candidate.score }}, 100 - {{ candidate.score }}],
-            backgroundColor: ['rgba(30,64,175,0.7)','rgba(209,213,219,0.3)'],
-            borderWidth: 0
-          }]
-        },
-        options: { responsive: true, cutout: '70%' }
-      });
+        // Radar Chart
+        const skillCtx = document.getElementById('skillChart').getContext('2d');
+        skillChart = new Chart(skillCtx,{
+          type:'radar',
+          data:{ labels:skill_labels, datasets:[{ label:candidate.name, data:candidate.skills, fill:true, backgroundColor:'rgba(30,64,175,0.2)', borderColor:'rgba(30,64,175,1)', pointBackgroundColor:'rgba(30,64,175,1)'}] },
+          options:{ responsive:true }
+        });
+
+        // Line Chart
+        const timeCtx = document.getElementById('timeChart').getContext('2d');
+        timeChart = new Chart(timeCtx,{
+          type:'line',
+          data:{ labels:response_time_labels, datasets:[{ label:"Response Time (sec)", data:candidate.response_times, borderColor:"rgba(59,130,246,1)", backgroundColor:"rgba(59,130,246,0.2)", fill:true, tension:0.3, pointRadius:5 }]},
+          options:{ responsive:true }
+        });
+
+        // Pie Chart
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        pieChart = new Chart(pieCtx,{
+          type:'pie',
+          data:{ labels:skill_labels, datasets:[{ data:candidate.skills, backgroundColor:['rgba(30,64,175,0.7)','rgba(255,99,132,0.7)','rgba(59,130,246,0.7)']}]},
+          options:{ responsive:true }
+        });
+
+        // Doughnut Chart
+        const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+        doughnutChart = new Chart(doughnutCtx,{
+          type:'doughnut',
+          data:{ labels:["Score","Remaining"], datasets:[{ data:[candidate.score,100-candidate.score], backgroundColor:['rgba(30,64,175,0.7)','rgba(209,213,219,0.3)'], borderWidth:0 }]},
+          options:{ responsive:true, cutout:'70%' }
+        });
+      }
+
+      function updateCharts(candidate, skill_labels, response_time_labels){
+        scoreChart.data.datasets[0].data = [candidate.score];
+        scoreChart.data.datasets[1].data = [candidate.skills[1]];
+        scoreChart.update();
+
+        skillChart.data.datasets[0].data = candidate.skills;
+        skillChart.data.datasets[0].label = candidate.name;
+        skillChart.update();
+
+        timeChart.data.labels = response_time_labels;
+        timeChart.data.datasets[0].data = candidate.response_times;
+        timeChart.update();
+
+        pieChart.data.datasets[0].data = candidate.skills;
+        pieChart.update();
+
+        doughnutChart.data.datasets[0].data = [candidate.score, 100-candidate.score];
+        doughnutChart.update();
+      }
+
+      // Save score + report in localStorage history
+      function saveDashboardScoreAndReport(candidate){
+        const history = JSON.parse(localStorage.getItem("interviewHistory")) || [];
+        if(history.length > 0){
+          history[history.length - 1].score = candidate.score;
+          history[history.length - 1].reportData = {
+            score: candidate.score,
+            skills: candidate.skills,
+            response_times: candidate.response_times
+          };
+          localStorage.setItem("interviewHistory", JSON.stringify(history));
+        }
+      }
+
+      // Initialize charts with initial server-rendered data
+      initCharts({{ candidate|tojson }}, {{ skill_labels|tojson }}, {{ response_time_labels|tojson }});
+
+      // Auto-refresh charts every 5 seconds and save to history
+      setInterval(() => {
+        fetch('/dashboard-data')
+        .then(res => res.json())
+        .then(data => {
+          updateCharts(data.candidate, data.skill_labels, data.response_time_labels);
+          saveDashboardScoreAndReport(data.candidate); // <-- save score + report
+        })
+        .catch(err => console.error(err));
+      }, 5000);
     </script>
   </body>
 </html>

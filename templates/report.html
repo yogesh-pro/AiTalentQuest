@@ -548,6 +548,25 @@
           }, 100);
         });
       });
+      // Save current report to localStorage history
+function saveReportToHistory() {
+  const report = JSON.parse(localStorage.getItem("currentReport") || "{}");
+  if (!report.candidate_name) return; // optional check
+
+  const history = JSON.parse(localStorage.getItem("interviewHistory") || "[]");
+
+  // Add timestamp to report
+  report.timestamp = new Date().toISOString();
+
+  history.push({ reportData: report });
+  localStorage.setItem("interviewHistory", JSON.stringify(history));
+}
+
+// Call the function on page load
+document.addEventListener("DOMContentLoaded", () => {
+  saveReportToHistory();
+});
+
     </script>
   </body>
 </html>
