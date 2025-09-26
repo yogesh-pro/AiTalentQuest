@@ -1,5 +1,5 @@
 def main():
-    print("Hello from interview-bot!")
+    print("Hello from ai-talentquest!")
 
 
 if __name__ == "__main__":

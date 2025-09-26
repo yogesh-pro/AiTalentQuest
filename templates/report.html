@@ -537,7 +537,29 @@
       </div>
     </div>
     <script>
-      // Animate progress bars on page load
+      function saveReportToHistory() {
+        const report = JSON.parse(localStorage.getItem("currentReport") || "{}");
+        if (!report.candidate_name) return;
+
+        const history = JSON.parse(localStorage.getItem("interviewHistory") || "[]");
+        report.timestamp = new Date().toISOString();
+
+        if (!history.length) {
+          history.push({ reportData: report });
+        } else {
+          const lastIndex = history.length - 1;
+          const lastEntry = history[lastIndex] || {};
+          history[lastIndex] = {
+            ...lastEntry,
+            reportData: report,
+            timestamp: report.timestamp,
+            score: report.overall_score ?? lastEntry.score,
+          };
+        }
+
+        localStorage.setItem("interviewHistory", JSON.stringify(history));
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
         const progressBars = document.querySelectorAll(".progress-fill");
         progressBars.forEach((bar) => {
@@ -547,26 +569,43 @@
             bar.style.width = width;
           }, 100);
         });
+
+        const startTime = localStorage.getItem("interviewStartTime");
+        if (startTime) {
+          const durationCard = document.createElement("div");
+          durationCard.className = "card duration-card";
+
+          const elapsedMs = Date.now() - parseInt(startTime, 10);
+          const totalSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
+          const hours = Math.floor(totalSeconds / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          const seconds = totalSeconds % 60;
+
+          const formatted = [hours, minutes, seconds]
+            .map((value) => String(value).padStart(2, "0"))
+            .join(":");
+
+          durationCard.innerHTML = `
+            <h2>⏱️ Interview Duration</h2>
+            <p style="font-size:1rem; color:var(--dark); margin-top:0.5rem">
+              Time Taken: ${formatted}
+            </p>
+          `;
+
+          const metricsGrid = document.querySelector(".grid");
+          if (metricsGrid && !metricsGrid.querySelector(".duration-card")) {
+            const cards = metricsGrid.querySelectorAll(".card");
+            const reference = cards[2] || cards[cards.length - 1];
+            if (reference) {
+              reference.insertAdjacentElement("afterend", durationCard);
+            } else {
+              metricsGrid.appendChild(durationCard);
+            }
+          }
+        }
+
+        saveReportToHistory();
       });
-      // Save current report to localStorage history
-function saveReportToHistory() {
-  const report = JSON.parse(localStorage.getItem("currentReport") || "{}");
-  if (!report.candidate_name) return; // optional check
-
-  const history = JSON.parse(localStorage.getItem("interviewHistory") || "[]");
-
-  // Add timestamp to report
-  report.timestamp = new Date().toISOString();
-
-  history.push({ reportData: report });
-  localStorage.setItem("interviewHistory", JSON.stringify(history));
-}
-
-// Call the function on page load
-document.addEventListener("DOMContentLoaded", () => {
-  saveReportToHistory();
-});
-
     </script>
   </body>
 </html>

@@ -8,8 +8,12 @@ wheels/
 
 # Virtual environments
 .venv
-<<<<<<< HEAD
+
+# Environment files
 .env
+
+# macOS artifacts
 .DS_Store
-=======
->>>>>>> 210c9f6 (change by krish)
+
+# Session data
+flask_session_data/

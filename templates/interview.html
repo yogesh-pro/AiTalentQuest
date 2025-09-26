@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HR Interview Call</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
       :root {
         --primary: #1e40af;
@@ -69,7 +71,6 @@
         gap: 10px;
       }
       .video-container {
-        
         display: flex;
         flex-direction: column;
         padding: 15px;
@@ -80,7 +81,7 @@
       .hr-image-container {
         position: relative;
         height: 100%;
-        width:100%;
+        width: 100%;
         display: flex;
         padding: 15px;
         gap: 40;
@@ -102,7 +103,7 @@
         align-items: center;
         background: rgba(248, 250, 252, 0.8);
         border-radius: var(--border-radius);
-         width: 100%;
+        width: 100%;
         border: 1px solid rgba(229, 231, 235, 0.5);
       
       }
@@ -202,11 +203,11 @@
         width: 100%;
       }
       .chat-header h2 {
-        margin-left:25rem;
-        color: var(--primary);
-        font-size: 24px;
-        font-weight: 700;
-         display: flex;
+  margin-left: 25rem;
+  color: var(--primary);
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
         align-items: center;
         justify-content: center;
         background: linear-gradient(135deg, #1e40af, #374151);
@@ -660,25 +661,24 @@
         bottom: 20px;
       }
       #interview-timer {
-  margin-left: auto;       /* Pushes timer to the right */
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--primary);
-}
-.chat-header {
-  display: flex;
-  align-items: center;
-  gap: 15px;
+        margin-left: auto; /* Pushes timer to the right */
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--primary);
+      }
+      .chat-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
 
-  padding: 15px 25px;
-  background: linear-gradient(
-    135deg,
-    rgba(30, 64, 175, 0.05),
-    rgba(55, 65, 81, 0.05)
-  );
-  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
-}
-
+        padding: 15px 25px;
+        background: linear-gradient(
+          135deg,
+          rgba(30, 64, 175, 0.05),
+          rgba(55, 65, 81, 0.05)
+        );
+        border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+      }
 
       /* --- */
       /* Responsive adjustments */
@@ -847,8 +847,12 @@
         <div class="chat-header">
           <button class="menu-btn" onclick="toggleMenu()">☰</button>
           <h2>Interview Session</h2>
-            <div id="interview-timer">00:00</div>
-         
+          <div id="interview-timer">
+            <span id="timer-icon"
+              ><i class="fa-regular fa-clock" style="margin-right: 5px"></i
+            ></span>
+            <span id="timer-text">00:00</span>
+          </div>
         </div>
         <div class="chat-container" id="chat-container"></div>
 
@@ -877,7 +881,11 @@
 
         <div class="video-stack">
           <div class="hr-image-container">
-            <img src="/static/interviewer.jpg" alt="Interviewer" class="hr-image" />
+            <img
+              src="/static/interviewer.jpg"
+              alt="Interviewer"
+              class="hr-image"
+            />
             <div class="audio-animation" id="audio-animation"></div>
           </div>
           <div class="user-video-container">
@@ -897,555 +905,565 @@
     </div>
 
     <script>
-        let recognition;
-        let accumulatedTranscript = "";
-        let isListening = false;
-        let silenceTimer;
-        let restartTimer;
-        const SILENCE_TIMEOUT = 5000;
-        const RESTART_INTERVAL = 45000;
-        let isAIResponding = false;
-        let isSpeaking = false;
-        let speechUnlockTimer = null;
-        let speechTimeoutTimer = null;
+      let recognition;
+      let accumulatedTranscript = "";
+      let isListening = false;
+      let silenceTimer;
+      let restartTimer;
+      const SILENCE_TIMEOUT = 5000;
+      const RESTART_INTERVAL = 45000;
+      let isAIResponding = false;
+      let isSpeaking = false;
+      let speechUnlockTimer = null;
+      let speechTimeoutTimer = null;
 
-        let hasSpokenPrompt = false;
+      let hasSpokenPrompt = false;
 
-        window.onload = () => {
-          console.log("Initialized Interview App");
-          setTimeout(() => {
-            addMessageToChat(
-              "Interviewer",
-              "Hello! Welcome to your interview. Let's begin by having you tell me about yourself.",
-              "hr-message"
-            );
-          }, 500);
+      window.onload = () => {
+        console.log("Initialized Interview App");
+        setTimeout(() => {
+          addMessageToChat(
+            "Interviewer",
+            "Hello! Welcome to your interview. Let's begin by having you tell me about yourself.",
+            "hr-message"
+          );
+        }, 500);
 
-          document
-            .getElementById("user-input")
-            .addEventListener("keypress", (e) => {
-              if (e.key === "Enter") sendMessage();
-            });
-  const endBtnMobile = document.getElementById("end-interview-btn-mobile");
-  if (endBtnMobile) endBtnMobile.addEventListener("click", endInterview);
-  document
-    .getElementById("user-input")
-    .addEventListener("keypress", (e) => {
-      if (e.key === "Enter") sendMessage();
-    });
+        document
+          .getElementById("user-input")
+          .addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+          });
+        const endBtnMobile = document.getElementById(
+          "end-interview-btn-mobile"
+        );
+        if (endBtnMobile) endBtnMobile.addEventListener("click", endInterview);
+        document
+          .getElementById("user-input")
+          .addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+          });
 
-          document
-            .getElementById("end-interview-btn")
-            .addEventListener("click", endInterview);
+        document
+          .getElementById("end-interview-btn")
+          .addEventListener("click", endInterview);
 
-          initializeWebcam();
-        };
+        initializeWebcam();
+      };
 
-        function initializeWebcam() {
-          const video = document.getElementById("user-cam");
-          if (navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices
-              .getUserMedia({
-                video: { width: 1280, height: 720, facingMode: "user" },
-              })
-              .then((stream) => (video.srcObject = stream))
-              .catch((err) => console.error("Webcam error", err));
-          }
-        }
-
-        function startVoice() {
-          if (isListening || isAIResponding || isSpeaking) {
-            addMessageToChat(
-              "System",
-              "⛔ Please wait until the interviewer completes the question.",
-              "hr-message"
-            );
-            return;
-          }
-          accumulatedTranscript = "";
-          startRecognition();
-        }
-
-        function startRestartTimer() {
-          clearTimeout(restartTimer);
-          restartTimer = setTimeout(() => {
-            console.log("⏱️ Restarting voice input due to 45s limit");
-            restartRecognition();
-          }, RESTART_INTERVAL);
-        }
-
-        function startSilenceTimer() {
-          clearTimeout(silenceTimer);
-          silenceTimer = setTimeout(() => {
-            if (accumulatedTranscript.trim()) {
-              console.log("🕐 User silent for 5s, sending message");
-              sendMessage();
-            } else {
-              addMessageToChat(
-                "System",
-                "🕒 No speech detected. Try again.",
-                "hr-message"
-              );
-              stopRecognition();
-            }
-          }, SILENCE_TIMEOUT);
-        }
-
-        function startRecognition() {
-          const SpeechRecognition =
-            window.SpeechRecognition || window.webkitSpeechRecognition;
-          if (!SpeechRecognition) {
-            alert("Speech Recognition not supported!");
-            return;
-          }
-
-          recognition = new SpeechRecognition();
-          recognition.lang = "en-IN";
-          recognition.continuous = true;
-          recognition.interimResults = true;
-
-          // let hasSpokenPrompt = false;  // 👈 Add this globally at the top
-
-          recognition.onstart = () => {
-            isListening = true;
-
-            if (!hasSpokenPrompt) {
-              addMessageToChat(
-                "System",
-                "🎤 Listening... Speak now.",
-                "hr-message"
-              );
-              hasSpokenPrompt = true;
-            }
-
-            startRestartTimer();
-            startSilenceTimer();
-          };
-
-          recognition.onresult = (e) => {
-            let interim = "";
-            for (let i = e.resultIndex; i < e.results.length; i++) {
-              const transcript = e.results[i][0].transcript;
-              if (e.results[i].isFinal) {
-                accumulatedTranscript += transcript + " ";
-              } else {
-                interim += transcript;
-              }
-            }
-            document.getElementById("user-input").value =
-              accumulatedTranscript + interim;
-            startSilenceTimer();
-          };
-
-          recognition.onerror = (e) => {
-            console.error("Recognition error", e.error);
-            addMessageToChat("System", "❌ Error: " + e.error, "hr-message");
-            stopRecognition();
-          };
-
-          recognition.onend = () => {
-            if (isListening) {
-              console.log("⛔ Recognition ended unexpectedly. Restarting...");
-              restartRecognition();
-            }
-          };
-
-          try {
-            recognition.start();
-          } catch (e) {
-            console.error("Start error", e);
-          }
-        }
-
-        function restartRecognition() {
-          if (recognition) {
-            recognition.onend = null;
-            recognition.stop();
-          }
-          startRecognition();
-        }
-
-        function stopRecognition() {
-          clearTimeout(silenceTimer);
-          clearTimeout(restartTimer);
-          isListening = false;
-          if (recognition) {
-            recognition.onend = null;
-            recognition.stop();
-          }
-        }
-
-        function sendMessage() {
-          // Clear any existing speech timers
-          if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
-          if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
-
-          // Stop any ongoing speech synthesis when sending a new message
-          if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
-            console.log("Cancelled ongoing speech synthesis for new message");
-            addMessageToChat(
-              "System",
-              "🔇 Previous voice-over stopped for new message.",
-              "hr-message"
-            );
-          }
-
-          // Reset all states
-          isSpeaking = false;
-          isAIResponding = false;
-          document.getElementById("audio-animation").classList.remove("active");
-          document.getElementById("unlock-btn").style.display = "none";
-
-          stopRecognition();
-
-          let input = document.getElementById("user-input");
-          let message = input.value.trim() || accumulatedTranscript.trim();
-
-          if (!message) return;
-
-          input.value = "";
-          accumulatedTranscript = "";
-
-          addMessageToChat("You", message, "user-message");
-
-          isAIResponding = true;
-
-          fetch("/ask", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `message=${encodeURIComponent(message)}`,
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (!data.reply) throw new Error("No reply");
-
-              const cleanReply = data.reply
-                .replace(/(\([^)]*\))/g, "")
-                .replace(/I'll wait for your message.*?(\.|\n)/gi, "")
-                .replace(/No pressure.*?(\.|\n)/gi, "");
-
-              addMessageToChat("Interviewer", cleanReply.trim(), "hr-message");
-
-              // ⚠️ If there's a response, speak it
-              if (cleanReply.trim()) {
-                speakMessage(cleanReply.trim());
-
-                // Safety timeout in case speech events don't fire
-                speechTimeoutTimer = setTimeout(() => {
-                  if (isSpeaking || isAIResponding) {
-                    console.warn("Speech synthesis timeout - forcing unlock");
-                    isSpeaking = false;
-                    isAIResponding = false;
-                    document.getElementById("user-input").disabled = false;
-                    document
-                      .getElementById("audio-animation")
-                      .classList.remove("active");
-                    document.getElementById("unlock-btn").style.display =
-                      "none";
-                  }
-                }, 30000); // 30 second timeout
-              } else {
-                isAIResponding = false;
-              }
+      function initializeWebcam() {
+        const video = document.getElementById("user-cam");
+        if (navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices
+            .getUserMedia({
+              video: { width: 1280, height: 720, facingMode: "user" },
             })
-            .catch((err) => {
-              console.error("Send error:", err);
-              addMessageToChat(
-                "System",
-                "⚠️ Failed to send message.",
-                "hr-message"
-              );
-            })
-            .finally(() => {
-              // ✅ Always unlock if not speaking
-              if (!isSpeaking) isAIResponding = false;
-            });
+            .then((stream) => (video.srcObject = stream))
+            .catch((err) => console.error("Webcam error", err));
         }
+      }
 
-        function speakMessage(text) {
-          // Clear any existing timers
-          if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
-          if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
-
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = "en-IN";
-          utterance.rate = 1.5;
-
-          isSpeaking = true;
-          isAIResponding = true; // Keep AI responding flag active during speech
-          document.getElementById("user-input").disabled = false; // Allow typing during speech
-
-          // Show unlock button after 5 seconds as a safety measure
-          speechUnlockTimer = setTimeout(() => {
-            if (isSpeaking || isAIResponding) {
-              document.getElementById("unlock-btn").style.display =
-                "inline-block";
-            }
-          }, 5000);
-
-          // 🌟 Start HR animation
-          document.getElementById("audio-animation").classList.add("active");
-
-          utterance.onend = () => {
-            if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
-            if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
-            isSpeaking = false;
-            isAIResponding = false; // ✅ Unlock here
-            document.getElementById("user-input").disabled = false;
-            document
-              .getElementById("audio-animation")
-              .classList.remove("active");
-            document.getElementById("unlock-btn").style.display = "none";
-          };
-
-          utterance.onerror = () => {
-            if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
-            if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
-            isSpeaking = false;
-            isAIResponding = false; // ✅ Unlock on error too
-            document.getElementById("user-input").disabled = false;
-            document
-              .getElementById("audio-animation")
-              .classList.remove("active");
-            document.getElementById("unlock-btn").style.display = "none";
-          };
-
-          window.speechSynthesis.speak(utterance);
-        }
-
-        function forceUnlock() {
-          console.log("Force unlocking interview interface");
-
-          // Clear any speech-related timers
-          if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
-          if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
-
-          // Stop any ongoing speech synthesis
-          if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
-            console.log("Cancelled ongoing speech synthesis");
-          }
-
-          isSpeaking = false;
-          isAIResponding = false;
-          isListening = false;
-          document.getElementById("user-input").disabled = false;
-          document.getElementById("audio-animation").classList.remove("active");
-          document.getElementById("unlock-btn").style.display = "none";
+      function startVoice() {
+        if (isListening || isAIResponding || isSpeaking) {
           addMessageToChat(
             "System",
-            "🔓 Interface unlocked manually. Previous voice-over stopped.",
+            "⛔ Please wait until the interviewer completes the question.",
+            "hr-message"
+          );
+          return;
+        }
+        accumulatedTranscript = "";
+        startRecognition();
+      }
+
+      function startRestartTimer() {
+        clearTimeout(restartTimer);
+        restartTimer = setTimeout(() => {
+          console.log("⏱️ Restarting voice input due to 45s limit");
+          restartRecognition();
+        }, RESTART_INTERVAL);
+      }
+
+      function startSilenceTimer() {
+        clearTimeout(silenceTimer);
+        silenceTimer = setTimeout(() => {
+          if (accumulatedTranscript.trim()) {
+            console.log("🕐 User silent for 5s, sending message");
+            sendMessage();
+          } else {
+            addMessageToChat(
+              "System",
+              "🕒 No speech detected. Try again.",
+              "hr-message"
+            );
+            stopRecognition();
+          }
+        }, SILENCE_TIMEOUT);
+      }
+
+      function startRecognition() {
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          alert("Speech Recognition not supported!");
+          return;
+        }
+
+        recognition = new SpeechRecognition();
+        recognition.lang = "en-IN";
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        // let hasSpokenPrompt = false;  // 👈 Add this globally at the top
+
+        recognition.onstart = () => {
+          isListening = true;
+
+          if (!hasSpokenPrompt) {
+            addMessageToChat(
+              "System",
+              "🎤 Listening... Speak now.",
+              "hr-message"
+            );
+            hasSpokenPrompt = true;
+          }
+
+          startRestartTimer();
+          startSilenceTimer();
+        };
+
+        recognition.onresult = (e) => {
+          let interim = "";
+          for (let i = e.resultIndex; i < e.results.length; i++) {
+            const transcript = e.results[i][0].transcript;
+            if (e.results[i].isFinal) {
+              accumulatedTranscript += transcript + " ";
+            } else {
+              interim += transcript;
+            }
+          }
+          document.getElementById("user-input").value =
+            accumulatedTranscript + interim;
+          startSilenceTimer();
+        };
+
+        recognition.onerror = (e) => {
+          console.error("Recognition error", e.error);
+          addMessageToChat("System", "❌ Error: " + e.error, "hr-message");
+          stopRecognition();
+        };
+
+        recognition.onend = () => {
+          if (isListening) {
+            console.log("⛔ Recognition ended unexpectedly. Restarting...");
+            restartRecognition();
+          }
+        };
+
+        try {
+          recognition.start();
+        } catch (e) {
+          console.error("Start error", e);
+        }
+      }
+
+      function restartRecognition() {
+        if (recognition) {
+          recognition.onend = null;
+          recognition.stop();
+        }
+        startRecognition();
+      }
+
+      function stopRecognition() {
+        clearTimeout(silenceTimer);
+        clearTimeout(restartTimer);
+        isListening = false;
+        if (recognition) {
+          recognition.onend = null;
+          recognition.stop();
+        }
+      }
+
+      function sendMessage() {
+        // Clear any existing speech timers
+        if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
+        if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
+
+        // Stop any ongoing speech synthesis when sending a new message
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          console.log("Cancelled ongoing speech synthesis for new message");
+          addMessageToChat(
+            "System",
+            "🔇 Previous voice-over stopped for new message.",
             "hr-message"
           );
         }
 
-        function addMessageToChat(sender, text, className) {
-          const container = document.getElementById("chat-container");
-          const div = document.createElement("div");
-          div.className = `message ${className}`;
-          div.innerHTML = `<div class="message-header">${sender}</div><div>${text}</div>`;
-          container.appendChild(div);
+        // Reset all states
+        isSpeaking = false;
+        isAIResponding = false;
+        document.getElementById("audio-animation").classList.remove("active");
+        document.getElementById("unlock-btn").style.display = "none";
 
-          // Scroll to the bottom smoothly
-          container.scrollTo({
-            top: container.scrollHeight,
-            behavior: "smooth",
-          });
-        }
-        function adjustChatHeight() {
-          const chatContainer = document.getElementById("chat-container");
-          const inputContainer = document.querySelector(".input-container");
-          chatContainer.style.height =
-            window.innerHeight - inputContainer.offsetHeight + "px";
-        }
+        stopRecognition();
 
-        // Call on load and resize (keyboard open/close)
-        window.addEventListener("load", adjustChatHeight);
-        window.addEventListener("resize", adjustChatHeight);
+        let input = document.getElementById("user-input");
+        let message = input.value.trim() || accumulatedTranscript.trim();
 
-        async function endInterview() {
-          window.speechSynthesis.cancel();
-          stopRecognition();
+        if (!message) return;
 
-          const btn = document.getElementById("end-interview-btn");
-          const overlay = document.getElementById("loading-overlay");
+        input.value = "";
+        accumulatedTranscript = "";
 
-          btn.disabled = true;
-          btn.innerHTML =
-            '<div class="loading-spinner"></div><span>Generating Report...</span>';
-          overlay.classList.add("active");
+        addMessageToChat("You", message, "user-message");
 
-          try {
-            const res = await fetch("/generate-report", { method: "POST" });
-            const data = await res.json();
-            if (data.status === "success") {
-              window.location.href = "/report";
+        isAIResponding = true;
+
+        fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `message=${encodeURIComponent(message)}`,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.reply) throw new Error("No reply");
+
+            const cleanReply = data.reply
+              .replace(/(\([^)]*\))/g, "")
+              .replace(/I'll wait for your message.*?(\.|\n)/gi, "")
+              .replace(/No pressure.*?(\.|\n)/gi, "");
+
+            addMessageToChat("Interviewer", cleanReply.trim(), "hr-message");
+
+            // ⚠️ If there's a response, speak it
+            if (cleanReply.trim()) {
+              speakMessage(cleanReply.trim());
+
+              // Safety timeout in case speech events don't fire
+              speechTimeoutTimer = setTimeout(() => {
+                if (isSpeaking || isAIResponding) {
+                  console.warn("Speech synthesis timeout - forcing unlock");
+                  isSpeaking = false;
+                  isAIResponding = false;
+                  document.getElementById("user-input").disabled = false;
+                  document
+                    .getElementById("audio-animation")
+                    .classList.remove("active");
+                  document.getElementById("unlock-btn").style.display = "none";
+                }
+              }, 30000); // 30 second timeout
             } else {
-              throw new Error(data.message || "Unknown error");
+              isAIResponding = false;
             }
-          } catch (err) {
-            console.error("End error:", err);
+          })
+          .catch((err) => {
+            console.error("Send error:", err);
             addMessageToChat(
               "System",
-              "❌ Failed to generate report.",
+              "⚠️ Failed to send message.",
               "hr-message"
             );
-          } finally {
-            overlay.classList.remove("active");
-            btn.disabled = false;
-            btn.innerHTML = "End Interview";
+          })
+          .finally(() => {
+            // ✅ Always unlock if not speaking
+            if (!isSpeaking) isAIResponding = false;
+          });
+      }
+
+      function speakMessage(text) {
+        // Clear any existing timers
+        if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
+        if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-IN";
+        utterance.rate = 1.5;
+
+        isSpeaking = true;
+        isAIResponding = true; // Keep AI responding flag active during speech
+        document.getElementById("user-input").disabled = false; // Allow typing during speech
+
+        // Show unlock button after 5 seconds as a safety measure
+        speechUnlockTimer = setTimeout(() => {
+          if (isSpeaking || isAIResponding) {
+            document.getElementById("unlock-btn").style.display =
+              "inline-block";
           }
+        }, 5000);
+
+        // 🌟 Start HR animation
+        document.getElementById("audio-animation").classList.add("active");
+
+        utterance.onend = () => {
+          if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
+          if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
+          isSpeaking = false;
+          isAIResponding = false; // ✅ Unlock here
+          document.getElementById("user-input").disabled = false;
+          document.getElementById("audio-animation").classList.remove("active");
+          document.getElementById("unlock-btn").style.display = "none";
+        };
+
+        utterance.onerror = () => {
+          if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
+          if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
+          isSpeaking = false;
+          isAIResponding = false; // ✅ Unlock on error too
+          document.getElementById("user-input").disabled = false;
+          document.getElementById("audio-animation").classList.remove("active");
+          document.getElementById("unlock-btn").style.display = "none";
+        };
+
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function forceUnlock() {
+        console.log("Force unlocking interview interface");
+
+        // Clear any speech-related timers
+        if (speechUnlockTimer) clearTimeout(speechUnlockTimer);
+        if (speechTimeoutTimer) clearTimeout(speechTimeoutTimer);
+
+        // Stop any ongoing speech synthesis
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          console.log("Cancelled ongoing speech synthesis");
         }
 
-        document.addEventListener("visibilitychange", () => {
-          if (document.visibilityState === "hidden") {
-            window.speechSynthesis.cancel();
-            stopRecognition(); // prevent ghost restarts
-          }
+        isSpeaking = false;
+        isAIResponding = false;
+        isListening = false;
+        document.getElementById("user-input").disabled = false;
+        document.getElementById("audio-animation").classList.remove("active");
+        document.getElementById("unlock-btn").style.display = "none";
+        addMessageToChat(
+          "System",
+          "🔓 Interface unlocked manually. Previous voice-over stopped.",
+          "hr-message"
+        );
+      }
+
+      function addMessageToChat(sender, text, className) {
+        const container = document.getElementById("chat-container");
+        const div = document.createElement("div");
+        div.className = `message ${className}`;
+        div.innerHTML = `<div class="message-header">${sender}</div><div>${text}</div>`;
+        container.appendChild(div);
+
+        // Scroll to the bottom smoothly
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: "smooth",
         });
+      }
+      function adjustChatHeight() {
+        const chatContainer = document.getElementById("chat-container");
+        const inputContainer = document.querySelector(".input-container");
+        chatContainer.style.height =
+          window.innerHeight - inputContainer.offsetHeight + "px";
+      }
 
-        window.addEventListener("load", () => {
-          if (recognition && recognition.stop) {
-            window.speechSynthesis.cancel();
-            stopRecognition(); // ✅ Stop any leftover recognition
+      // Call on load and resize (keyboard open/close)
+      window.addEventListener("load", adjustChatHeight);
+      window.addEventListener("resize", adjustChatHeight);
+
+      async function endInterview() {
+        window.speechSynthesis.cancel();
+        stopRecognition();
+
+        const btn = document.getElementById("end-interview-btn");
+        const overlay = document.getElementById("loading-overlay");
+
+        btn.disabled = true;
+        btn.innerHTML =
+          '<div class="loading-spinner"></div><span>Generating Report...</span>';
+        overlay.classList.add("active");
+
+        try {
+          const res = await fetch("/generate-report", { method: "POST" });
+          const data = await res.json();
+          if (data.status === "success") {
+            window.location.href = "/report";
+          } else {
+            throw new Error(data.message || "Unknown error");
           }
+        } catch (err) {
+          console.error("End error:", err);
+          addMessageToChat(
+            "System",
+            "❌ Failed to generate report.",
+            "hr-message"
+          );
+        } finally {
+          overlay.classList.remove("active");
+          btn.disabled = false;
+          btn.innerHTML = "End Interview";
+        }
+      }
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+          window.speechSynthesis.cancel();
+          stopRecognition(); // prevent ghost restarts
+        }
+      });
+
+      window.addEventListener("load", () => {
+        if (recognition && recognition.stop) {
+          window.speechSynthesis.cancel();
+          stopRecognition(); // ✅ Stop any leftover recognition
+        }
+      });
+
+      window.addEventListener("pageshow", (event) => {
+        if (event.persisted && recognition && recognition.stop) {
+          window.speechSynthesis.cancel();
+          stopRecognition(); // ✅ Handles bfcache (back-forward cache)
+        }
+      });
+
+      window.addEventListener("beforeunload", () => {
+        if (recognition && recognition.stop) {
+          window.speechSynthesis.cancel();
+          stopRecognition(); // Prevents ghost sessions
+        }
+      });
+      function addMessageToChat(sender, text, className) {
+        const container = document.getElementById("chat-container");
+
+        const div = document.createElement("div");
+        div.className = `message ${className}`;
+        div.innerHTML = `<div class="message-header">${sender}</div><div>${text}</div>`;
+        container.appendChild(div);
+
+        // Smooth scroll to bottom
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: "smooth", // scroll smoothly like WhatsApp
         });
+      }
+      function adjustChatForKeyboard() {
+        const chatContainer = document.getElementById("chat-container");
+        const inputContainer = document.querySelector(".input-container");
 
-        window.addEventListener("pageshow", (event) => {
-          if (event.persisted && recognition && recognition.stop) {
-            window.speechSynthesis.cancel();
-            stopRecognition(); // ✅ Handles bfcache (back-forward cache)
-          }
+        // Available height: viewport height minus input container height
+        const availableHeight =
+          window.innerHeight - inputContainer.offsetHeight;
+        chatContainer.style.height = availableHeight + "px";
+
+        // Always scroll to bottom
+        chatContainer.scrollTo({
+          top: chatContainer.scrollHeight,
+          behavior: "smooth",
         });
+      }
+      // When page loads
+      window.addEventListener("load", adjustChatForKeyboard);
 
-        window.addEventListener("beforeunload", () => {
-          if (recognition && recognition.stop) {
-            window.speechSynthesis.cancel();
-            stopRecognition(); // Prevents ghost sessions
-          }
-        });
-        function addMessageToChat(sender, text, className) {
-          const container = document.getElementById("chat-container");
+      // When window resizes (keyboard opens/closes)
+      window.addEventListener("resize", adjustChatForKeyboard);
 
-          const div = document.createElement("div");
-          div.className = `message ${className}`;
-          div.innerHTML = `<div class="message-header">${sender}</div><div>${text}</div>`;
-          container.appendChild(div);
+      // When a new message is added
+      function addMessageToChat(sender, text, className) {
+        const container = document.getElementById("chat-container");
+        const div = document.createElement("div");
+        div.className = `message ${className}`;
+        div.innerHTML = `<div class="message-header">${sender}</div><div>${text}</div>`;
 
-          // Smooth scroll to bottom
-          container.scrollTo({
-            top: container.scrollHeight,
-            behavior: "smooth", // scroll smoothly like WhatsApp
+        // Check if user is near bottom before adding new message
+        const isNearBottom =
+          container.scrollHeight -
+            container.scrollTop -
+            container.clientHeight <
+          50;
+
+        container.appendChild(div);
+
+        // Only auto-scroll if user was near bottom
+        if (isNearBottom) {
+          container.scrollTop = container.scrollHeight;
+        }
+      }
+      function handleEndInterview() {
+        document.getElementById("loading-overlay").classList.add("active");
+
+        fetch("/end_interview", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            document
+              .getElementById("loading-overlay")
+              .classList.remove("active");
+            addMessageToChat(
+              "System",
+              " Interview Ended. Generating your report. Please check your email.",
+              "hr-message"
+            );
+          })
+          .catch((err) => {
+            console.error("End interview fetch error:", err);
+            document
+              .getElementById("loading-overlay")
+              .classList.remove("active");
+            addMessageToChat(
+              "System",
+              " Error ending interview. Please try again.",
+              "hr-message"
+            );
+          });
+      }
+
+      // ✅ Renamed toggle too
+      function toggleMenu() {
+        const menu = document.getElementById("hidden-menu");
+        menu.classList.toggle("active");
+      }
+
+      // Close button handler
+      document.addEventListener("DOMContentLoaded", () => {
+        const closeBtn = document.getElementById("close-btn");
+        const menu = document.getElementById("hidden-menu");
+
+        if (closeBtn) {
+          closeBtn.addEventListener("click", () => {
+            menu.classList.remove("active");
           });
         }
-        function adjustChatForKeyboard() {
-          const chatContainer = document.getElementById("chat-container");
-          const inputContainer = document.querySelector(".input-container");
+      });
+      
+   let timerInterval = null;
+let startTime = null;
 
-          // Available height: viewport height minus input container height
-          const availableHeight =
-            window.innerHeight - inputContainer.offsetHeight;
-          chatContainer.style.height = availableHeight + "px";
+function startTimer() {
+  // Record start time
+  startTime = Date.now();
 
-          // Always scroll to bottom
-          chatContainer.scrollTo({
-            top: chatContainer.scrollHeight,
-            behavior: "smooth",
-          });
-        }
-        // When page loads
-        window.addEventListener("load", adjustChatForKeyboard);
+  // Hide icon when timer starts
+ 
 
-        // When window resizes (keyboard opens/closes)
-        window.addEventListener("resize", adjustChatForKeyboard);
-
-        // When a new message is added
-        function addMessageToChat(sender, text, className) {
-          const container = document.getElementById("chat-container");
-          const div = document.createElement("div");
-          div.className = `message ${className}`;
-          div.innerHTML = `<div class="message-header">${sender}</div><div>${text}</div>`;
-
-          // Check if user is near bottom before adding new message
-          const isNearBottom =
-            container.scrollHeight -
-              container.scrollTop -
-              container.clientHeight <
-            50;
-
-          container.appendChild(div);
-
-          // Only auto-scroll if user was near bottom
-          if (isNearBottom) {
-            container.scrollTop = container.scrollHeight;
-          }
-        }
-        function handleEndInterview() { 
-  document.getElementById("loading-overlay").classList.add("active");
-
-  fetch("/end_interview", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      document.getElementById("loading-overlay").classList.remove("active");
-      addMessageToChat(
-        "System",
-        " Interview Ended. Generating your report. Please check your email.",
-        "hr-message"
-      );
-    })
-    .catch((err) => {
-      console.error("End interview fetch error:", err);
-      document.getElementById("loading-overlay").classList.remove("active");
-      addMessageToChat(
-        "System",
-        " Error ending interview. Please try again.",
-        "hr-message"
-      );
-    });
+  // Start updating timer every second
+  timerInterval = setInterval(updateTimer, 1000);
 }
 
-// ✅ Renamed toggle too
-  function toggleMenu() {
-      const menu = document.getElementById("hidden-menu");
-      menu.classList.toggle("active");
-    }
-  
-
-  // Close button handler
-  document.addEventListener("DOMContentLoaded", () => {
-    const closeBtn = document.getElementById("close-btn");
-    const menu = document.getElementById("hidden-menu");
-
-    if (closeBtn) {
-      closeBtn.addEventListener("click", () => {
-        menu.classList.remove("active");
-      });
-    }
-  })
-  let interviewStartTime = Date.now();
-
 function updateTimer() {
-  const timerEl = document.getElementById("interview-timer");
-  if (!timerEl) return;
-
-  const elapsedMs = Date.now() - interviewStartTime;
+  const timerText = document.getElementById("timer-text");
+  const elapsedMs = Date.now() - startTime;
   const totalSeconds = Math.floor(elapsedMs / 1000);
+
   const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
   const seconds = String(totalSeconds % 60).padStart(2, "0");
 
-  timerEl.textContent = `${minutes}:${seconds}`;
+  timerText.textContent = `${minutes}:${seconds}`;
 }
 
-// Update timer every second
-setInterval(updateTimer, 1000);
+// Start timer automatically when page loads
+window.addEventListener("load", startTimer);
 
 
-      </script>
+    </script>
   </body>
 </html>
-
-
