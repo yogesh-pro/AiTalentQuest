@@ -564,6 +564,41 @@ def dashboard():
         response_time_labels=response_time_labels,
         summary=summary
     )
+
+@app.route("/dashboard-data")
+def dashboard_data():
+    latest_report = session.get("latest_report", {})
+    report_score = latest_report.get("report_score", {})
+
+    # Extract values
+    accuracy = report_score.get("accuracy", 0)
+    confidence = report_score.get("confidence", "Low")
+    communication_score = report_score.get("communication", 0)
+
+    # Calculate overall score dynamically
+    overall_score, confidence_score_num = calculate_overall_score(accuracy, confidence)
+
+    # Get response times
+    response_times = session.get("response_times", [])
+
+    # Candidate info
+    candidate = {
+        "name": session.get("candidate_name", "Candidate"),
+        "score": overall_score,
+        "skills": [accuracy, communication_score, confidence_score_num],
+        "response_times": response_times
+    }
+
+    # Dynamic labels
+    response_time_labels = [f"Q{i+1}" for i in range(len(response_times))]
+    skill_labels = ["Accuracy", "Communication", "Confidence"]
+
+    return jsonify({
+        "candidate": candidate,
+        "skill_labels": skill_labels,
+        "response_time_labels": response_time_labels
+    })
+
 if __name__ == '__main__':
     app.run(
     host='0.0.0.0',

@@ -1,27 +1,30 @@
 ### SCORES ###
 {
-  "overall_score": 42,
-  "accuracy": 30,
-  "communication": 48,
+  "overall_score": 40,
+  "accuracy": 25,
+  "communication": 30,
   "confidence": "Low",
-  "recommendation": "Needs significant improvement before moving forward."
+  "recommendation": "Requires significant improvement in technical knowledge and communication skills before moving forward in the process."
 }
 ### END SCORES ###
 
 ---
 
 ### ANALYSIS ###
-The candidate struggled to provide clear and relevant responses to technical questions, demonstrating a lack of understanding of the dsdwad role and its core concepts. Their inability to articulate their experience and apply technical knowledge to solve complex problems raises concerns about their ability to perform the job requirements. While they showed some potential in their initial introduction, their responses quickly devolved into unclear and irrelevant answers, indicating a need for further development and preparation.
+The candidate struggled to provide clear and concise answers to fundamental questions in Artificial Intelligence, Machine Learning, and Natural Language Processing. Their responses were often incoherent and lacked technical depth, making it challenging to assess their understanding of key concepts. Despite repeated opportunities, the candidate failed to demonstrate a basic grasp of supervised and unsupervised learning, overfitting, data preprocessing, and semantic meaning. Their inability to articulate their thoughts and ideas hindered effective communication and made it difficult to evaluate their potential fit for the role.
+
 ### END ANALYSIS ###
 
 ---
 
 ### STRENGTHS ###
-The candidate initially showed some enthusiasm and willingness to participate in the conversation, but unfortunately, their responses failed to demonstrate any tangible strengths.
+The candidate demonstrated a willingness to engage in conversation and answer questions, even if their responses were unclear. They also showed some enthusiasm for the topic, which is a positive attribute.
+
 ### END STRENGTHS ###
 
 ---
 
 ### IMPROVEMENTS ###
-The candidate should focus on thoroughly reviewing the dsdwad role and its core concepts to improve their understanding and communication. They should also work on developing their problem-solving skills and ability to articulate complex technical ideas in a clear and concise manner. Additionally, practicing their responses to common technical interview questions would greatly benefit their performance in future interviews.
+The candidate needs to significantly improve their technical knowledge and communication skills to be competitive for the role. They should focus on developing a deeper understanding of key concepts in Artificial Intelligence, Machine Learning, and Natural Language Processing. Additionally, they must work on articulating their thoughts and ideas clearly, concisely, and effectively to communicate their ideas to a technical audience.
+
 ### END IMPROVEMENTS ###

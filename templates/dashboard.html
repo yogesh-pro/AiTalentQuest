@@ -55,11 +55,6 @@
         margin: auto;
         width: 100%;
       }
-<<<<<<< HEAD
-      /* --- Mobile-specific styles --- */
-=======
-
->>>>>>> 99fdf692e55ccd6fdb6badf53e32cd1b2b8963f6
       @media (max-width: 1130px) {
         .dashboard {
           grid-template-columns: repeat(2, minmax(300px, 1fr));
@@ -111,12 +106,8 @@
     </style>
   </head>
   <body>
+    <h1>Interview Result Dashboard</h1>
     <div class="dashboard">
-<<<<<<< HEAD
-  
-
-=======
->>>>>>> 99fdf692e55ccd6fdb6badf53e32cd1b2b8963f6
       <!-- Score Bar Chart -->
       <div class="card">
         <h3>Score</h3>
@@ -150,114 +141,8 @@
 
     <script>
       let scoreChart, skillChart, timeChart, pieChart, doughnutChart;
-<<<<<<< HEAD
 
-      function initCharts(candidate, skill_labels, response_time_labels){
-          // Score Bar Chart
-    const scoreCtx = document.getElementById('scoreChart').getContext('2d');
-scoreChart = new Chart(scoreCtx, {
-    type: 'bar',
-    data: {
-        labels: [candidate.name], // one category
-        datasets: [
-            { 
-               label: 'Score', 
-                data: [candidate.score], 
-                backgroundColor: 'rgba(30,64,175,0.7)', 
-                borderRadius: 6, 
-                barThickness: 30,
-                order: 1
-            },
-
-
-            
-            { 
-               label: 'Communication', 
-                data: [candidate.skills[1]], 
-                backgroundColor:'rgba(255,99,132,0.7)', 
-                borderRadius: 6, 
-                barThickness: 30,
-                order: 2,
-                // This offset separates it from the first bar
-                barPercentage: 0.5,
-                categoryPercentage: 0.6
-            }
-        ]
-    },
-  options: {
-    responsive: true,
-    plugins: { legend: { display: true } },
-    scales: {
-        x: {
-            stacked: false,
-        },
-        y: {
-            beginAtZero: true,
-            max: 100
-        }
-    }
-}
-});
-
-          
-
-          // Radar Chart
-          const skillCtx = document.getElementById('skillChart').getContext('2d');
-          skillChart = new Chart(skillCtx,{
-              type:'radar',
-              data:{ labels:skill_labels, datasets:[{ label:candidate.name, data:candidate.skills, fill:true, backgroundColor:'rgba(30,64,175,0.2)', borderColor:'rgba(30,64,175,1)', pointBackgroundColor:'rgba(30,64,175,1)'}] },
-              options:{ responsive:true }
-          });
-
-          // Line Chart
-          const timeCtx = document.getElementById('timeChart').getContext('2d');
-          timeChart = new Chart(timeCtx,{
-              type:'line',
-              data:{ labels:response_time_labels, datasets:[{ label:"Response Time (sec)", data:candidate.response_times, borderColor:"rgba(59,130,246,1)", backgroundColor:"rgba(59,130,246,0.2)", fill:true, tension:0.3, pointRadius:5 }]},
-              options:{ responsive:true }
-          });
-
-          // Pie Chart
-          const pieCtx = document.getElementById('pieChart').getContext('2d');
-          pieChart = new Chart(pieCtx,{
-              type:'pie',
-              data:{ labels:skill_labels, datasets:[{ data:candidate.skills, backgroundColor:['rgba(30,64,175,0.7)','rgba(255,99,132,0.7)','rgba(59,130,246,0.7)']}]},
-              options:{ responsive:true }
-          });
-
-          // Doughnut Chart
-          const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
-          doughnutChart = new Chart(doughnutCtx,{
-              type:'doughnut',
-              data:{ labels:["Score","Remaining"], datasets:[{ data:[candidate.score,100-candidate.score], backgroundColor:['rgba(30,64,175,0.7)','rgba(209,213,219,0.3)'], borderWidth:0 }]},
-              options:{ responsive:true, cutout:'70%' }
-          });
-      }
-
-      function updateCharts(candidate, skill_labels, response_time_labels){
-          document.getElementById('candidateName').innerText = candidate.name;
-          document.getElementById('candidateScore').innerText = candidate.score;
-
-          scoreChart.data.datasets[0].data = [candidate.score];
-          scoreChart.data.datasets[1].data = [candidate.skills[1]];
-          scoreChart.update();
-
-          skillChart.data.datasets[0].data = candidate.skills;
-          skillChart.data.datasets[0].label = candidate.name;
-          skillChart.update();
-
-          timeChart.data.labels = response_time_labels;
-          timeChart.data.datasets[0].data = candidate.response_times;
-          timeChart.update();
-
-          pieChart.data.datasets[0].data = candidate.skills;
-          pieChart.update();
-
-          doughnutChart.data.datasets[0].data = [candidate.score, 100-candidate.score];
-          doughnutChart.update();
-=======
-
-      function initCharts(candidate, skill_labels, response_time_labels){
+      function initCharts(candidate, skill_labels, response_time_labels) {
         // Score Bar Chart
         const scoreCtx = document.getElementById('scoreChart').getContext('2d');
         scoreChart = new Chart(scoreCtx, {
@@ -276,7 +161,7 @@ scoreChart = new Chart(scoreCtx, {
               {
                 label: 'Communication',
                 data: [candidate.skills[1]],
-                backgroundColor:'rgba(255,99,132,0.7)',
+                backgroundColor: 'rgba(255,99,132,0.7)',
                 borderRadius: 6,
                 barThickness: 30,
                 order: 2,
@@ -297,38 +182,72 @@ scoreChart = new Chart(scoreCtx, {
 
         // Radar Chart
         const skillCtx = document.getElementById('skillChart').getContext('2d');
-        skillChart = new Chart(skillCtx,{
-          type:'radar',
-          data:{ labels:skill_labels, datasets:[{ label:candidate.name, data:candidate.skills, fill:true, backgroundColor:'rgba(30,64,175,0.2)', borderColor:'rgba(30,64,175,1)', pointBackgroundColor:'rgba(30,64,175,1)'}] },
-          options:{ responsive:true }
+        skillChart = new Chart(skillCtx, {
+          type: 'radar',
+          data: {
+            labels: skill_labels,
+            datasets: [{
+              label: candidate.name,
+              data: candidate.skills,
+              fill: true,
+              backgroundColor: 'rgba(30,64,175,0.2)',
+              borderColor: 'rgba(30,64,175,1)',
+              pointBackgroundColor: 'rgba(30,64,175,1)'
+            }]
+          },
+          options: { responsive: true }
         });
 
         // Line Chart
         const timeCtx = document.getElementById('timeChart').getContext('2d');
-        timeChart = new Chart(timeCtx,{
-          type:'line',
-          data:{ labels:response_time_labels, datasets:[{ label:"Response Time (sec)", data:candidate.response_times, borderColor:"rgba(59,130,246,1)", backgroundColor:"rgba(59,130,246,0.2)", fill:true, tension:0.3, pointRadius:5 }]},
-          options:{ responsive:true }
+        timeChart = new Chart(timeCtx, {
+          type: 'line',
+          data: {
+            labels: response_time_labels,
+            datasets: [{
+              label: "Response Time (sec)",
+              data: candidate.response_times,
+              borderColor: "rgba(59,130,246,1)",
+              backgroundColor: "rgba(59,130,246,0.2)",
+              fill: true,
+              tension: 0.3,
+              pointRadius: 5
+            }]
+          },
+          options: { responsive: true }
         });
 
         // Pie Chart
         const pieCtx = document.getElementById('pieChart').getContext('2d');
-        pieChart = new Chart(pieCtx,{
-          type:'pie',
-          data:{ labels:skill_labels, datasets:[{ data:candidate.skills, backgroundColor:['rgba(30,64,175,0.7)','rgba(255,99,132,0.7)','rgba(59,130,246,0.7)']}]},
-          options:{ responsive:true }
+        pieChart = new Chart(pieCtx, {
+          type: 'pie',
+          data: {
+            labels: skill_labels,
+            datasets: [{
+              data: candidate.skills,
+              backgroundColor: ['rgba(30,64,175,0.7)', 'rgba(255,99,132,0.7)', 'rgba(59,130,246,0.7)']
+            }]
+          },
+          options: { responsive: true }
         });
 
         // Doughnut Chart
         const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
-        doughnutChart = new Chart(doughnutCtx,{
-          type:'doughnut',
-          data:{ labels:["Score","Remaining"], datasets:[{ data:[candidate.score,100-candidate.score], backgroundColor:['rgba(30,64,175,0.7)','rgba(209,213,219,0.3)'], borderWidth:0 }]},
-          options:{ responsive:true, cutout:'70%' }
+        doughnutChart = new Chart(doughnutCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ["Score", "Remaining"],
+            datasets: [{
+              data: [candidate.score, 100 - candidate.score],
+              backgroundColor: ['rgba(30,64,175,0.7)', 'rgba(209,213,219,0.3)'],
+              borderWidth: 0
+            }]
+          },
+          options: { responsive: true, cutout: '70%' }
         });
       }
 
-      function updateCharts(candidate, skill_labels, response_time_labels){
+      function updateCharts(candidate, skill_labels, response_time_labels) {
         scoreChart.data.datasets[0].data = [candidate.score];
         scoreChart.data.datasets[1].data = [candidate.skills[1]];
         scoreChart.update();
@@ -344,14 +263,14 @@ scoreChart = new Chart(scoreCtx, {
         pieChart.data.datasets[0].data = candidate.skills;
         pieChart.update();
 
-        doughnutChart.data.datasets[0].data = [candidate.score, 100-candidate.score];
+        doughnutChart.data.datasets[0].data = [candidate.score, 100 - candidate.score];
         doughnutChart.update();
       }
 
       // Save score + report in localStorage history
-      function saveDashboardScoreAndReport(candidate){
+      function saveDashboardScoreAndReport(candidate) {
         const history = JSON.parse(localStorage.getItem("interviewHistory")) || [];
-        if(history.length > 0){
+        if (history.length > 0) {
           history[history.length - 1].score = candidate.score;
           history[history.length - 1].reportData = {
             score: candidate.score,
@@ -360,32 +279,20 @@ scoreChart = new Chart(scoreCtx, {
           };
           localStorage.setItem("interviewHistory", JSON.stringify(history));
         }
->>>>>>> 99fdf692e55ccd6fdb6badf53e32cd1b2b8963f6
       }
 
       // Initialize charts with initial server-rendered data
       initCharts({{ candidate|tojson }}, {{ skill_labels|tojson }}, {{ response_time_labels|tojson }});
 
-<<<<<<< HEAD
-      // Auto-refresh charts every 5 seconds
-      setInterval(() => {
-          fetch('/dashboard-data')
-          .then(res => res.json())
-          .then(data => {
-              updateCharts(data.candidate, data.skill_labels, data.response_time_labels);
-          })
-          .catch(err => console.error(err));
-=======
       // Auto-refresh charts every 5 seconds and save to history
       setInterval(() => {
         fetch('/dashboard-data')
-        .then(res => res.json())
-        .then(data => {
-          updateCharts(data.candidate, data.skill_labels, data.response_time_labels);
-          saveDashboardScoreAndReport(data.candidate); // <-- save score + report
-        })
-        .catch(err => console.error(err));
->>>>>>> 99fdf692e55ccd6fdb6badf53e32cd1b2b8963f6
+          .then(res => res.json())
+          .then(data => {
+            updateCharts(data.candidate, data.skill_labels, data.response_time_labels);
+            saveDashboardScoreAndReport(data.candidate);
+          })
+          .catch(err => console.error(err));
       }, 5000);
     </script>
   </body>
