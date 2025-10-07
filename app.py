@@ -458,11 +458,16 @@ Not enough responses were provided by the candidate to generate a meaningful rep
                 "confidence": "Low",
                 "recommendation": "Could not parse scores"
             }
+        confidence_map = {"Low": 30, "Medium": 70, "High": 90}
+        confidence_score = confidence_map.get(report_score["confidence"], 0)
+
+        report_score["overall_score"] = (report_score["accuracy"] + report_score["communication"] + confidence_score) // 3
 
         session['latest_report'] = {
             "report_text": report_text,
             "report_score": report_score
         }
+        # print(report_score)
 
         return jsonify({"status": "success", "report": report_text})
 
@@ -518,9 +523,9 @@ def calculate_overall_score(accuracy, confidence):
     - Accuracy: weighted 70%
     - Confidence: mapped and weighted 30%
     """
-    confidence_map = {"Low": 40, "Medium": 70, "High": 90}
-    confidence_score = confidence_map.get(confidence, 50)
-
+    confidence_map = {"Low": 30, "Medium": 70, "High": 90}
+    confidence_score = confidence_map.get(confidence, 0)
+    print(str(confidence_score)+"\n\n\n\n")
     # Weighted formula
     overall = int((accuracy * 0.7) + (confidence_score * 0.3))
     return overall, confidence_score

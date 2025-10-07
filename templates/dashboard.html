@@ -137,6 +137,33 @@
         <h3>Score Status</h3>
         <canvas id="doughnutChart"></canvas>
       </div>
+
+      <!-- Interview Duration Card -->
+      <div class="card">
+        <h3>Interview Duration</h3>
+        <div style="padding: 20px;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <p style="font-size: 2.5rem; font-weight: bold; color: #007bff; margin: 10px 0;">
+              <span id="totalDuration">0:00</span>
+            </p>
+            <p style="color: #666; font-size: 0.9rem;">Total Time</p>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+            <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+              <p style="font-size: 1.5rem; font-weight: 600; color: #28a745; margin: 5px 0;">
+                <span id="avgResponse">0</span>s
+              </p>
+              <p style="color: #666; font-size: 0.85rem;">Avg Response</p>
+            </div>
+            <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+              <p style="font-size: 1.5rem; font-weight: 600; color: #17a2b8; margin: 5px 0;">
+                <span id="totalQuestions">0</span>
+              </p>
+              <p style="color: #666; font-size: 0.85rem;">Questions</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -281,8 +308,31 @@
         }
       }
 
+      // Update interview duration metrics
+      function updateDurationMetrics(candidate) {
+        const responseTimes = candidate.response_times || [];
+        const totalQuestions = responseTimes.length;
+        
+        // Calculate total duration (sum of all response times)
+        const totalSeconds = responseTimes.reduce((sum, time) => sum + time, 0);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = Math.floor(totalSeconds % 60);
+        
+        // Calculate average response time
+        const avgResponse = totalQuestions > 0 
+          ? Math.round(totalSeconds / totalQuestions) 
+          : 0;
+        
+        // Update DOM elements
+        document.getElementById('totalDuration').textContent = 
+          `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        document.getElementById('avgResponse').textContent = avgResponse;
+        document.getElementById('totalQuestions').textContent = totalQuestions;
+      }
+
       // Initialize charts with initial server-rendered data
       initCharts({{ candidate|tojson }}, {{ skill_labels|tojson }}, {{ response_time_labels|tojson }});
+      updateDurationMetrics({{ candidate|tojson }});
 
       // Auto-refresh charts every 5 seconds and save to history
       setInterval(() => {
@@ -290,6 +340,7 @@
           .then(res => res.json())
           .then(data => {
             updateCharts(data.candidate, data.skill_labels, data.response_time_labels);
+            updateDurationMetrics(data.candidate);
             saveDashboardScoreAndReport(data.candidate);
           })
           .catch(err => console.error(err));
